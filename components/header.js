@@ -3,9 +3,8 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import AddIcon from '@mui/icons-material/Add';
+import Link from 'next/link';
 
 const Header = () => {
   return (
@@ -13,10 +12,10 @@ const Header = () => {
       <AppBar position="static">
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            CrowdCoin
+            <Link href="/"> CrowdCoin </Link>
           </Typography>
           <Button variant="outline" endIcon={<AddIcon />}>
-            Create Campaing
+            <Link href="/campaigns/new"> Create Campaings </Link>
           </Button>
         </Toolbar>
       </AppBar>

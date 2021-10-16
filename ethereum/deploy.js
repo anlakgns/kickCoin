@@ -1,11 +1,11 @@
-const HdWalletProvider = require('truffle-hdwallet-provider');
+const HDWalletProvider = require("@truffle/hdwallet-provider");
 const Web3 = require('web3');
-const compiledFactory = require('./build/CampaingFactory.json')
+const compiledFactory = require('./build/CampaignFactory.json')
 
-const provider = new HdWalletProvider(
-  process.env.NEXT_PUBLIC_ACCOUNT_WORDS,
-  process.env.NEXT_PUBLIC_INFURA_PROVIDER
-);
+const provider = new HDWalletProvider({
+  mnemonic: "grunt nurse cycle addict snake wood join wife winter fame borrow page",
+  providerOrUrl: "https://rinkeby.infura.io/v3/8403a1ae62ed409c99c4aa814f985006"
+});
 
 const web3 = new Web3(provider);
 
