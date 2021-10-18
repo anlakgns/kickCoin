@@ -65,7 +65,7 @@ export async function getStaticProps(context) {
   const campaign = Campaign(address);
   const supportersCount = await campaign.methods.supportersCount().call();
 
-  const requestCount = await campaign.methods.getRequestsCount().call();
+  const requestCount = await campaign.methods.numRequests().call();
   const requests = await Promise.all(
     Array(parseInt(requestCount))
       .fill()
@@ -89,7 +89,7 @@ export async function getStaticPaths() {
     paths: [
       {
         params: {
-          campaignAddress: '0xd0402f989729DD88622d77F78A079229E18A4257',
+          campaignAddress: '0xdBc1BFB90e5d7f869C62665d96E2411A9837bA9f',
         },
       },
     ],

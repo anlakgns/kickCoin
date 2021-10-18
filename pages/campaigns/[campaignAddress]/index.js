@@ -53,6 +53,7 @@ export async function getStaticProps(context) {
   const { params } = context;
   const address = params.campaignAddress;
   const summary = await Campaign(address).methods.getSummary().call();
+  console.log(summary);
   return {
     props: {
       summary: {
@@ -72,7 +73,7 @@ export async function getStaticPaths() {
     paths: [
       {
         params: {
-          campaignAddress: '0xd0402f989729DD88622d77F78A079229E18A4257',
+          campaignAddress: '0xdBc1BFB90e5d7f869C62665d96E2411A9837bA9f',
         },
       },
     ],

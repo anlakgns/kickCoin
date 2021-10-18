@@ -1,48 +1,39 @@
 import React from 'react';
 import factory from '../ethereum/factory';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
-import Link from 'next/link'
+import { styled } from '@mui/material/styles';
+import CampaignList from '../components/campaignList';
 
-const Home = (props) => {
-  const renderCampaigns = props.deployedCampaignsList.map((campaign) => {
-    return (
-      <Card sx={{ minWidth: 275 }} key={campaign}>
-        <CardContent>
-          <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-            Word of the Day
-          </Typography>
-          <Typography variant="h5" component="div">
-            benevolent
-          </Typography>
-          <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            {campaign}
-          </Typography>
-          <Typography variant="body2">
-            well meaning and kindly.
-            <br />
-            {'"a benevolent smile"'}
-          </Typography>
-        </CardContent>
-        <CardActions>
-          <Button size="small"><Link href={`/campaigns/${campaign}`}>View Campaign</Link></Button>
-        </CardActions>
-      </Card>
-    );
-  });
+const MainGrid = styled(Grid)(({ theme }) => ({
+  padding: '0rem 5rem',
+}));
 
+const Headline = styled(Typography)(({ theme }) => ({
+  fontWeight: 'bold',
+  color: theme.palette.custom.textWhite,
+  width: '100%',
+  marginTop: '3rem',
+}));
+
+const Divider = styled('div')(({ theme }) => ({
+  border: `0.20rem solid ${theme.palette.custom.blueLight} `,
+  width: '100%',
+  marginTop: '0.4rem',
+  marginBottom: '2rem',
+  borderRadius: '0.15rem',
+  opacity: 0.7,
+}));
+
+const Home = ({deployedCampaignsList}) => {
   return (
-    <div>
-      <h3>Open Campaigns</h3>
-      {renderCampaigns}
-      <Button variant="contained" endIcon={<AddIcon />}>
-        Create Campaign
-      </Button>
-    </div>
+    <MainGrid>
+      <Headline variant="h5">Open Campaigns</Headline>
+      <Divider />
+      <CampaignList deployedCampaignsList={deployedCampaignsList} />
+    </MainGrid>
   );
 };
 
