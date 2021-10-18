@@ -4,12 +4,12 @@ pragma solidity ^0.8.9;
 contract CampaignFactory {
     address[] public deployedCampaigns;
     
-    function createCampaign(uint minimum) public {
-        address newCampaign = new Campaign(minimum, msg.sender);
+    function createCampaign(uint minimum,  string memory pName, string memory pAim, string memory imagePath, uint financialGoal) public {
+        address newCampaign = address(new Campaign(minimum, msg.sender, pName,pAim, imagePath, financialGoal));
         deployedCampaigns.push(newCampaign);
     }
-    
-    function getDeployedCampaigns() public view returns (address[] memory) {
+
+     function getDeployedCampaigns() public view returns (address[] memory) {
         return deployedCampaigns;
     }
     
@@ -17,22 +17,31 @@ contract CampaignFactory {
 
 contract Campaign {
     address public manager;
+    string public projectName;
+    string public projectAim;
+    string public imageURL;
+    uint public financialAim;
     uint public minimumContribution;
     mapping(address => bool) public supporters;
     uint public supportersCount;
     struct Request {
         string description;
         uint value;
-        address recipient;
+        address payable recipient;
         bool complete;
         uint approvalCount;
         mapping(address => bool) approvals;
     }
-    Request[] public requests;
-    
-    constructor(uint minimum, address creator) {
+    uint public numRequests;
+    mapping (uint => Request) public requests;  
+
+    constructor(uint minimum, address creator, string memory pName, string memory pAim, string memory imagePath, uint financialGoal) {
         manager = creator;
         minimumContribution = minimum;
+        projectName = pName;
+        projectAim = pAim;
+        financialAim = financialGoal;
+        imageURL = imagePath;
     }
     
     modifier restricted() {
@@ -46,17 +55,15 @@ contract Campaign {
         supportersCount++;
     }
     
-    function createRequest(string memory description, uint value, address recipient)
+    function createRequest(string memory description, uint value, address payable recipient)
     public  restricted {
-        Request memory newRequest = Request({
-           description: description,
-           value: value,
-           recipient: recipient,
-           complete: false,
-           approvalCount: 0
-        });
-        
-        requests.push(newRequest);
+        Request storage r = requests[numRequests++];
+        r.description = description;
+        r.value = value;
+        r.recipient = recipient;
+        r.complete = false;
+        r.approvalCount = 0;
+
     }
     
     function approveRequest(uint index) public {
@@ -80,19 +87,18 @@ contract Campaign {
     } 
 
     function getSummary() public view returns (
-      uint, uint, uint, uint, address
+      uint, uint, uint, uint, address,  string memory,  string memory, uint
       ) {
         return (
           minimumContribution,
-          this.balance,
-          requests.length,
+          address(this).balance,
+          numRequests,
           supportersCount,
-          manager
+          manager,
+          projectName,
+          projectAim,
+          financialAim
         );
-    }
-    
-    function getRequestsCount() public view returns (uint) {
-        return requests.length;
     }
     
 }
