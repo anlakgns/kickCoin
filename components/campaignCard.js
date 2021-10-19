@@ -3,10 +3,11 @@ import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import { useRouter } from 'next/router';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   height: '12rem',
-  backgroundImage: 'linear-gradient(to bottom, #016986, #0392B4)',
+  backgroundImage: `linear-gradient(to bottom, ${theme.palette.custom.gradient1}, ${theme.palette.custom.gradient2})`,
   borderRadius: '1rem',
   overflow: 'hidden',
 }));
@@ -66,16 +67,17 @@ const ViewButton = styled(Button)(({ theme }) => ({
   width: '12rem',
   backgroundColor: theme.palette.custom.orange,
   color: theme.palette.custom.textWhite,
-  fontWeight:"bold",
+  fontWeight: 'bold',
   borderRadius: '1rem',
 }));
 
-const CampaignCard = (props) => {
+const CampaignCard = ({campaingInfo}) => {
+  const router = useRouter();
   return (
     <MainGrid item container direction="row" justifyContent="space-between">
       <ImageDiv
         sx={{
-          backgroundImage: `url(${'/africa.png'})`,
+          backgroundImage: `url(${campaingInfo.imageURL})`,
         }}
       />
       <TextContentGrid
@@ -85,20 +87,19 @@ const CampaignCard = (props) => {
         direction="column"
         justifyContent="center"
       >
-        <Headline variant="h6">Water Project in Africa</Headline>
+        <Headline variant="h6">{campaingInfo.projectName}</Headline>
         <Description variant="subtitle2">
-          This project is developed in order to meet the basic needs of african
-          people by making the water available for as many as people we can
+          {campaingInfo.projectAim}
         </Description>
       </TextContentGrid>
       <FundedGrid item xs={1}>
         <Circle />
         <Percentage variant="h6" align="center">
-          50%
+          {campaingInfo.balance/campaingInfo.financialAim* 100}%
         </Percentage>
         <FundedText align="center">funded</FundedText>
       </FundedGrid>
-      <ViewButton>View Campaign</ViewButton>
+      <ViewButton onClick={()=> router.push(`campaigns/${campaingInfo.address}`)}>View Campaign</ViewButton>
     </MainGrid>
   );
 };

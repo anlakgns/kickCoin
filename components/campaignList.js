@@ -24,14 +24,14 @@ const StyledPagination = styled(Pagination)(({ theme }) => ({
   },
 }));
 
-const CampaignList = ({deployedCampaignsList}) => {
-  console.log(deployedCampaignsList)
+const CampaignList = ({summaryList}) => {
   return (
     <MainGrid item container>
-      <CampaignCard />
-      <CampaignCard />
-      <CampaignCard />
-      <CampaignCard />
+      {summaryList.map(campaingInfo => {
+        return (
+          <CampaignCard key={campaingInfo.projectName} campaingInfo={campaingInfo} />
+        )
+      })}
       <StyledStack >
         <StyledPagination count={10} color="secondary" />
       </StyledStack>
