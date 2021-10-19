@@ -87,7 +87,7 @@ contract Campaign {
     } 
 
     function getSummary() public view returns (
-      uint, uint, uint, uint, address,  string memory,  string memory, uint
+      uint, uint, uint, uint, address,  string memory,  string memory, uint, string memory
       ) {
         return (
           minimumContribution,
@@ -97,8 +97,8 @@ contract Campaign {
           manager,
           projectName,
           projectAim,
-          financialAim
+          financialAim,
+          imageURL
         );
     }
-    
 }
