@@ -1,11 +1,11 @@
 import React from 'react';
 import factory from '../ethereum/factory';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
-import AddIcon from '@mui/icons-material/Add';
 import { styled } from '@mui/material/styles';
 import CampaignList from '../components/campaignList';
+import Campaign from '../ethereum/campaign';
+import web3 from '../ethereum/web3';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
@@ -27,12 +27,12 @@ const Divider = styled('div')(({ theme }) => ({
   opacity: 0.7,
 }));
 
-const Home = ({deployedCampaignsList}) => {
+const Home = ({ summaryList }) => {
   return (
     <MainGrid>
       <Headline variant="h5">Open Campaigns</Headline>
       <Divider />
-      <CampaignList deployedCampaignsList={deployedCampaignsList} />
+      <CampaignList summaryList={summaryList} />
     </MainGrid>
   );
 };
@@ -42,10 +42,29 @@ export default Home;
 // Server Side
 export async function getStaticProps() {
   const campaignslist = await factory.methods.getDeployedCampaigns().call();
-
+  const summariesArray = await Promise.all(
+    Array(parseInt(campaignslist.length))
+      .fill()
+      .map((element, index) => {
+        return Campaign(campaignslist[index]).methods.getSummary().call();
+      })
+  );
   return {
     props: {
-      deployedCampaignsList: campaignslist,
+      summaryList: summariesArray.map((campaignSummary, index) => {
+        return {
+          minimumContribution: campaignSummary[0],
+          balance: web3.utils.fromWei(campaignSummary[1], 'ether'),
+          requestsCount: campaignSummary[2],
+          supportersCount: campaignSummary[3],
+          manager: campaignSummary[4],
+          projectName: campaignSummary[5],
+          projectAim: campaignSummary[6],
+          financialAim: campaignSummary[7],
+          imageURL: campaignSummary[8],
+          address: campaignslist[index],
+        };
+      }),
     },
   };
 }
