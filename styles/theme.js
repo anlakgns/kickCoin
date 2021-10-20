@@ -12,7 +12,8 @@ let theme = createTheme({
     custom: {
       blueDark: '#033B53',
       blueLight: '#05AAE0',
-      orange: '#F7A308',
+      orange: '#DF9207',
+      orangeLight: '#F7A308',
       red: '#E32239',
       green: '#66AE6D',
       textWhite: '#FFFFFF',
@@ -36,6 +37,15 @@ let theme = createTheme({
           },
           '&:hover:not(.disabled):before': {
             borderBottom: `2px solid #033B53`,
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            backgroundColor: '#05AAE0',
           },
         },
       },

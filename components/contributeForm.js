@@ -6,6 +6,32 @@ import Campaign from '../ethereum/campaign';
 import web3 from '../ethereum/web3';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/router';
+import { styled } from '@mui/material/styles';
+
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  width: '100%',
+  color: theme.palette.custom.blueLight,
+  padding: '1rem 0rem',
+}));
+
+const InnerFormGrid = styled(Grid)(({ theme }) => ({
+  width: '100%',
+  color: theme.palette.custom.blueLight,
+  marginBottom: '1rem',
+  backgroundColor: theme.palette.custom.blueDark,
+  borderRadius: '1rem',
+  overflow: 'hidden',
+  padding: '1rem 3rem',
+}));
+
+const ContributeButton = styled(Button)(({ theme }) => ({
+  backgroundColor: theme.palette.custom.orange,
+  color: theme.palette.custom.textWhite,
+  fontWeight: 'bold',
+  margin: '1rem',
+  width: '15rem',
+  height: '5rem',
+}));
 
 const ContributeForm = ({ address }) => {
   const [contribution, setContribution] = useState('');
@@ -32,32 +58,34 @@ const ContributeForm = ({ address }) => {
   };
 
   return (
-    <form
-      onSubmit={(e) => submitHandler(e)}
-      style={{ marginTop: '2rem', padding: '1rem' }}
-    >
-      <Grid container direction="column" style={{ width: '100%' }}>
-        <Typography sx={{ margin: '1rem', marginBottom: '1rem' }} variant="h5">
-          Amount to Contribute
-        </Typography>
-        <TextField
-          sx={{ marginLeft: '1rem' }}
-          label="Contribution (Ether)"
-          variant="outlined"
-          value={contribution}
-          onChange={(e) => setContribution(e.target.value)}
-          error={false}
-          helperText={''}
-        />
-        <Button
-          type="submit"
-          variant="contained"
-          endIcon={spinner ? '' : <AddIcon />}
-          sx={{ margin: '1rem', width: '50%' }}
-        >
-          {spinner ? <CircularProgress color="secondary" /> : 'Create!'}
-        </Button>
-      </Grid>
+    <form onSubmit={(e) => submitHandler(e)}>
+      <InnerFormGrid
+        container
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Grid item xs={9}>
+          <StyledTextField
+            color="secondary"
+            label="Contribute in Wei"
+            variant="standard"
+            value={contribution}
+            inputProps={{ style: { color: 'white' } }}
+            InputLabelProps={{ sx: { color: '#05AAE0' } }}
+            onChange={(e) => setContribution(e.target.value)}
+          />
+        </Grid>
+        <Grid item container justifyContent="flex-end" xs={3}>
+          <ContributeButton
+            type="submit"
+            variant="contained"
+            endIcon={spinner ? '' : <AddIcon />}
+          >
+            {spinner ? <CircularProgress color="secondary" /> : 'Contribute!'}
+          </ContributeButton>
+        </Grid>
+      </InnerFormGrid>
     </form>
   );
 };

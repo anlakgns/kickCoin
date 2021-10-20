@@ -5,10 +5,9 @@ import { Button, Grid, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react';
-import factory from '../ethereum/factory';
 import web3 from '../ethereum/web3';
 import CircularProgress from '@mui/material/CircularProgress';
-import CampaignCard from './campaignCard';
+import Campaign from '../ethereum/campaign';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
@@ -58,52 +57,32 @@ const SubHeadline = styled(Typography)(({ theme }) => ({
   padding: '1rem 0rem',
 }));
 
-const CreateCampaignForm = ({ deployedCampaignsList }) => {
-  const [minContribution, setMinContribution] = useState('');
-  const [projectName, setProjectName] = useState('');
-  const [projectAim, setProjectAim] = useState('');
-  const [financialAim, setFinancialAim] = useState('');
-  const [imageURL, setImageURL] = useState('');
+const CreateRequestForm = ({ deployedCampaignsList }) => {
+  const [description, setDescription] = useState('');
+  const [value, setValue] = useState('');
+  const [recipient, setRecipient] = useState('');
   const [spinner, setSpinner] = useState(false);
-
-  const dummyCampaignInfo = {
-    minContribution,
-    balance: 10,
-    projectName,
-    projectAim,
-    financialAim: 20,
-    imageURL:
-      imageURL === ''
-        ? 'https://images.unsplash.com/photo-1504805572947-34fad45aed93?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80'
-        : imageURL,
-  };
 
   const router = useRouter();
 
   const submitHandler = async (e) => {
     e.preventDefault();
-
     setSpinner(true);
+
     try {
+      const campaign = await Campaign(address);
       const accounts = await web3.eth.getAccounts();
 
-      // no need to specify gas amount, metamask will do it for us.
-      await factory.methods
-        .createCampaign(
-          minContribution,
-          projectName,
-          projectAim,
-          imageURL,
-          financialAim
-        )
+      await campaign.methods
+        .createRequest(description, web3.utils.toWei(value, 'ether'), recipient)
         .send({
           from: accounts[0],
         });
+      router.push(`/campaigns/${address}/requests`);
     } catch (err) {
-      console.log(err.message);
+      setErrorMessage(err.message);
     }
     setSpinner(false);
-    router.push('/');
   };
 
   return (
@@ -112,63 +91,38 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
         <Grid item container direction="column">
           <StyledTextField
             color="secondary"
-            label="Project Name"
+            label="Description"
             variant="standard"
-            value={projectName}
+            value={description}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
             onChange={(e) => setProjectName(e.target.value)}
           />
           <StyledTextField
             color="secondary"
-            label="Budget Goal to Start The Project (Ether)"
+            label="Value in Ether"
             variant="standard"
-            value={financialAim}
+            value={value}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
             onChange={(e) => setFinancialAim(e.target.value)}
           />
           <StyledTextField
             color="secondary"
-            label="Minimum Contribution (Wei)"
+            label="Recipient"
             variant="standard"
-            value={minContribution}
+            value={recipient}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
             onChange={(e) => setMinContribution(e.target.value)}
           />
-          <StyledTextField
-            color="secondary"
-            label="Project Aim"
-            variant="standard"
-            multiline
-            value={projectAim}
-            inputProps={{ style: { color: 'white' } }}
-            InputLabelProps={{ sx: { color: '#05AAE0' } }}
-            onChange={(e) => setProjectAim(e.target.value)}
-          />
-          <StyledTextField
-            color="secondary"
-            label="Cover Image URL"
-            variant="standard"
-            value={imageURL}
-            inputProps={{ style: { color: 'white' } }}
-            InputLabelProps={{ sx: { color: '#05AAE0' } }}
-            onChange={(e) => setImageURL(e.target.value)}
-          />
-          <Grid item>
-            <SubHeadline variant="subtitle1">
-              Preview of your campaign
-            </SubHeadline>
-            <CampaignCard campaingInfo={dummyCampaignInfo} />
-          </Grid>
 
           <CreateButton
             type="submit"
             variant="contained"
             endIcon={spinner ? '' : <AddIcon />}
           >
-            {spinner ? <CircularProgress color="primary" /> : 'Create!'}
+            {spinner ? <CircularProgress color="secondary" /> : 'Create!'}
           </CreateButton>
         </Grid>
       </form>
@@ -176,4 +130,4 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
   );
 };
 
-export default CreateCampaignForm;
+export default CreateRequestForm;

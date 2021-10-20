@@ -22,7 +22,7 @@ const Headline = styled(Typography)(({ theme }) => ({
 
 const SubHeadline = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
-  color: theme.palette.custom.orange,
+  color: theme.palette.custom.blueLight,
   width: '100%',
   marginTop: '3rem',
   marginBottom: '1rem',
@@ -50,10 +50,11 @@ const AboutGrid = styled(Grid)(({ theme }) => ({
 }));
 
 const CampaignOverview = ({ cardsInfo, additionalInfo }) => {
+  console.log(cardsInfo, additionalInfo);
   return (
     <MainGrid>
       <Headline variant="h5">
-        {additionalInfo.projectName} - Campaign Overview
+        {additionalInfo?.projectName} Campaign Overview
       </Headline>
       <Divider />
       <AboutGrid>
@@ -70,10 +71,9 @@ const CampaignOverview = ({ cardsInfo, additionalInfo }) => {
       </SubHeadline>
       <OverviewList cardsInfo={cardsInfo} />
       <SubHeadline align="left" variant="subtitle1">
-        Contribute{' '}
+        Contribute Our Campaign{' '}
       </SubHeadline>
-      <ContributeForm/>
-
+      <ContributeForm />
     </MainGrid>
   );
 };

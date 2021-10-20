@@ -8,19 +8,55 @@ import { useRouter } from 'next/router';
 const MainGrid = styled(Grid)(({ theme }) => ({
   height: '10rem',
   width: '30rem',
-  backgroundImage: `linear-gradient(to bottom, ${theme.palette.custom.gradient1}, ${theme.palette.custom.gradient2})`,
+  backgroundColor: theme.palette.custom.blueDark,
+
   borderRadius: '1rem',
   overflow: 'hidden',
+  padding: '0rem 1rem',
+  display: 'flex',
+  justifyContent: 'center',
+  flexDirection: 'column',
 }));
 
-const OverviewCard = ({ info }) => {
-  const router = useRouter();
-  console.log(info);
+const SubHeadline = styled(Typography)(({ theme }) => ({
+  color: theme.palette.custom.orange,
+  fontWeight: 'bold',
+  padding: '0rem 1rem',
+  paddingBottom: '0.3rem',
+  width: '100%',
+}));
 
+const Description = styled(Typography)(({ theme }) => ({
+  color: theme.palette.custom.textWhite,
+  width: '100%',
+  opacity: 0.7,
+  padding: '0rem 1rem',
+  paddingBottom: '0.4rem',
+}));
+
+const StyledLink = styled('span')(({ theme }) => ({
+  color: theme.palette.custom.orangeLight,
+  fontWeight: 'bold',
+  cursor: "pointer"
+}));
+
+const OverviewCard = ({ info, explanation }) => {
+  const router = useRouter();
+  const address = router.query.campaignAddress
+  console.log(address)
   return (
     <MainGrid item>
-      <div>{info[0]}</div>
-      <div>{info[1]}</div>
+      <SubHeadline noWrap={true}>
+        {info[0]}: {info[1]}
+      </SubHeadline>
+      <Description align="left" variant="subtitle2">
+        {explanation}
+        {info[0] === 'requestsCount' ? (
+          <StyledLink onClick={()=> router.push(`/campaigns/${address}/requests`)}>View Requests</StyledLink>
+        ) : (
+          ''
+        )}
+      </Description>
     </MainGrid>
   );
 };

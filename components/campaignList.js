@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import CampaignCard from './campaignCard';
 import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   display: 'flex',
@@ -11,7 +10,7 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   gap: '1rem',
 }));
 
-const StyledStack = styled(Grid)(({ theme }) => ({
+const PaginationGrid = styled(Grid)(({ theme }) => ({
   width: '100%',
   display: 'flex',
   justifyContent: 'center',
@@ -20,21 +19,46 @@ const StyledStack = styled(Grid)(({ theme }) => ({
 
 const StyledPagination = styled(Pagination)(({ theme }) => ({
   '& .MuiPaginationItem-root': {
-    color: theme.palette.custom.textWhite
+    color: theme.palette.custom.textWhite,
   },
 }));
 
-const CampaignList = ({summaryList}) => {
+const CampaignList = ({ summaryList }) => {
+  const [page, setPage] = useState(1);
+  const [campaignAmountPerPage, setCampaignAmountPerPage] = useState(4);
+  const [summaryListPaged, setSummaryListPages] = useState([]);
+
+  useEffect(() => {
+    setSummaryListPages(
+      summaryList.slice(
+        (page - 1) * (campaignAmountPerPage),
+        campaignAmountPerPage * page
+      )
+    );
+  }, [page]);
+
+  const paginationHandler = (_, value) => {
+    setPage(value);
+  };
+
   return (
     <MainGrid item container>
-      {summaryList.map(campaingInfo => {
+      {summaryListPaged.map((campaingInfo) => {
         return (
-          <CampaignCard key={campaingInfo.projectName} campaingInfo={campaingInfo} />
-        )
+          <CampaignCard
+            key={campaingInfo.projectName}
+            campaingInfo={campaingInfo}
+          />
+        );
       })}
-      <StyledStack >
-        <StyledPagination count={10} color="secondary" />
-      </StyledStack>
+      <PaginationGrid>
+        <StyledPagination
+          count={Math.ceil(summaryList.length / campaignAmountPerPage)}
+          onChange={paginationHandler}
+          page={page}
+          color="secondary"
+        />
+      </PaginationGrid>
     </MainGrid>
   );
 };
