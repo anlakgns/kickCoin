@@ -50,7 +50,6 @@ const AboutGrid = styled(Grid)(({ theme }) => ({
 }));
 
 const CampaignOverview = ({ cardsInfo, additionalInfo }) => {
-  console.log(cardsInfo, additionalInfo);
   return (
     <MainGrid>
       <Headline variant="h5">
@@ -84,7 +83,6 @@ export async function getStaticProps(context) {
   const { params } = context;
   const address = params.campaignAddress;
   const summary = await Campaign(address).methods.getSummary().call();
-  console.log(summary);
   return {
     props: {
       cardsInfo: {

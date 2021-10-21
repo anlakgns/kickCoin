@@ -1,28 +1,21 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
-import { Button, Grid, Typography } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react';
 import web3 from '../ethereum/web3';
 import CircularProgress from '@mui/material/CircularProgress';
 import Campaign from '../ethereum/campaign';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
   borderRadius: '1rem',
   overflow: 'hidden',
   padding: '2rem 5rem',
-}));
-
-const Divider = styled('div')(({ theme }) => ({
-  border: `0.20rem solid ${theme.palette.custom.blueLight} `,
-  width: '100%',
-  marginTop: '0.4rem',
-  marginBottom: '2rem',
-  borderRadius: '0.15rem',
-  opacity: 0.7,
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -41,80 +34,103 @@ const CreateButton = styled(Button)(({ theme }) => ({
   width: '20rem',
 }));
 
-const ImageDiv = styled('div')(({ theme }) => ({
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'center',
-  backgroundSize: 'cover',
-  height: '12rem',
-  width: '25rem',
-  borderRadius: '1rem',
-}));
-
-const SubHeadline = styled(Typography)(({ theme }) => ({
-  color: theme.palette.secondary.main,
-  marginTop: '2rem',
-  fontWeight: 'bold',
-  padding: '1rem 0rem',
-}));
-
-const CreateRequestForm = ({ deployedCampaignsList }) => {
-  const [description, setDescription] = useState('');
-  const [value, setValue] = useState('');
-  const [recipient, setRecipient] = useState('');
+const CreateRequestForm = () => {
   const [spinner, setSpinner] = useState(false);
-
   const router = useRouter();
+  const address = router.query.campaignAddress;
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
-    setSpinner(true);
+  const formik = useFormik({
+    initialValues: {
+      description: '',
+      value: '',
+      recipient: '',
+    },
+    validationSchema: Yup.object({
+      description: Yup.string().required(),
+      value: Yup.number('Please intert a number')
+        .positive('The amount should be positive.')
+        .required('Please provide a min contribution amount.'),
+    }),
+    onSubmit: async (values) => {
+      setSpinner(true);
 
-    try {
-      const campaign = await Campaign(address);
-      const accounts = await web3.eth.getAccounts();
+      try {
+        const campaign = await Campaign(address);
+        const accounts = await web3.eth.getAccounts();
 
-      await campaign.methods
-        .createRequest(description, web3.utils.toWei(value, 'ether'), recipient)
-        .send({
-          from: accounts[0],
-        });
-      router.push(`/campaigns/${address}/requests`);
-    } catch (err) {
-      setErrorMessage(err.message);
-    }
-    setSpinner(false);
-  };
+        await campaign.methods
+          .createRequest(
+            values.description,
+            web3.utils.toWei(values.value, 'ether'),
+            values.recipient
+          )
+          .send({
+            from: accounts[0],
+          });
+        router.push(`/campaigns/${address}/requests`);
+      } catch (err) {
+        setErrorMessage(err.message);
+      }
+      setSpinner(false);
+    },
+  });
 
   return (
     <MainGrid>
-      <form onSubmit={(e) => submitHandler(e)}>
+      <form onSubmit={formik.handleSubmit}>
         <Grid item container direction="column">
           <StyledTextField
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.description}
+            name="description"
+            error={Boolean(
+              formik.touched.description && formik.errors.description
+            )}
+            helperText={
+              formik.touched.description && formik.errors.description
+                ? formik.errors.description
+                : ''
+            }
             color="secondary"
             label="Description"
             variant="standard"
-            value={description}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
-            onChange={(e) => setProjectName(e.target.value)}
           />
           <StyledTextField
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.value}
+            name="value"
+            error={Boolean(formik.touched.value && formik.errors.value)}
+            helperText={
+              formik.touched.value && formik.errors.value
+                ? formik.errors.value
+                : ''
+            }
             color="secondary"
             label="Value in Ether"
             variant="standard"
-            value={value}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
-            onChange={(e) => setFinancialAim(e.target.value)}
           />
           <StyledTextField
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.recipient}
+            name="recipient"
+            error={Boolean(formik.touched.recipient && formik.errors.recipient)}
+            helperText={
+              formik.touched.recipient && formik.errors.recipient
+                ? formik.errors.recipient
+                : ''
+            }
             color="secondary"
             label="Recipient"
             variant="standard"
-            value={recipient}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
-            onChange={(e) => setMinContribution(e.target.value)}
           />
 
           <CreateButton

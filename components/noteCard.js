@@ -1,14 +1,6 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
-import { useRouter } from 'next/router';
-import { Button, Grid, Typography } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import AddIcon from '@mui/icons-material/Add';
-import { useState } from 'react';
-import factory from '../ethereum/factory';
-import web3 from '../ethereum/web3';
-import CircularProgress from '@mui/material/CircularProgress';
-import CampaignCard from './campaignCard';
+import { Grid, Typography } from '@mui/material';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
@@ -54,10 +46,15 @@ const NoteCard = () => {
 
       <SubHeadline>Ethereum Gas</SubHeadline>
       <Description variant="subtitle1">
-        In the ethereum network, actions to change blockchain costs you some trivial amount of ether or in the ethereum world "gas". We will provide information about that on the warning area.
+        In the ethereum network, actions to change blockchain costs you some
+        trivial amount of ether or in the ethereum world "gas". We will provide
+        information about that on the warning area.
       </Description>
 
-
+      <SubHeadline>Processing Time</SubHeadline>
+      <Description variant="subtitle1">
+        When we request a change in blockchain, the request needs to be validated by network. The validation process takes about 15-30 seconds on ethereum networks. That's why please be patient while making changes on network. Besides this is the reason of the actions costing you some gases. When miners validate our request, we pay them for their effort which in this case by gas.
+      </Description>
     </MainGrid>
   );
 };

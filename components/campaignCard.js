@@ -71,7 +71,7 @@ const ViewButton = styled(Button)(({ theme }) => ({
   borderRadius: '1rem',
 }));
 
-const CampaignCard = ({campaingInfo}) => {
+const CampaignCard = ({ campaingInfo }) => {
   const router = useRouter();
   return (
     <MainGrid item container direction="row" justifyContent="space-between">
@@ -88,18 +88,20 @@ const CampaignCard = ({campaingInfo}) => {
         justifyContent="center"
       >
         <Headline variant="h6">{campaingInfo.projectName}</Headline>
-        <Description variant="subtitle2">
-          {campaingInfo.projectAim}
-        </Description>
+        <Description variant="subtitle2">{campaingInfo.projectAim}</Description>
       </TextContentGrid>
       <FundedGrid item xs={1}>
         <Circle />
         <Percentage variant="h6" align="center">
-          {campaingInfo.balance/campaingInfo.financialAim* 100}%
+          {(campaingInfo.balance / campaingInfo.financialAim) * 100}%
         </Percentage>
         <FundedText align="center">funded</FundedText>
       </FundedGrid>
-      <ViewButton onClick={()=> router.push(`campaigns/${campaingInfo.address}`)}>View Campaign</ViewButton>
+      <ViewButton
+        onClick={() => router.push(`campaigns/${campaingInfo.address}`)}
+      >
+        View Campaign
+      </ViewButton>
     </MainGrid>
   );
 };

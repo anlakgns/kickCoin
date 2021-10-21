@@ -128,7 +128,6 @@ const Header = () => {
 
   // Pathname check for consistency for tabs
   useEffect(() => {
-    console.log(router.pathname);
     switch (router.pathname) {
       case '/':
         setValue(0);
@@ -175,12 +174,12 @@ const Header = () => {
         case '/campaigns/new':
           return (
             <span>
-              <WarningSpan>Create</WarningSpan> action will cost some amount of gas for
-              you.
+              <WarningSpan>Create</WarningSpan> action will cost some amount of
+              gas for you.
             </span>
           );
 
-          case '/notes':
+        case '/notes':
           return (
             <span>
               Please take a look at me when you hang around our website.

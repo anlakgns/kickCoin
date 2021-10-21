@@ -2,7 +2,7 @@ import { Button, Typography, Grid } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react';
-import Campaign from "../../../../ethereum/campaign"
+import Campaign from '../../../../ethereum/campaign';
 import web3 from '../../../../ethereum/web3';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from 'next/router';
@@ -30,15 +30,6 @@ const Divider = styled('div')(({ theme }) => ({
 }));
 
 const RequestNew = () => {
-  const [description, setDescription] = useState('');
-  const [value, setValue] = useState('');
-  const [recipient, setRecipient] = useState('');
-  const [spinner, setSpinner] = useState(false);
-  const router = useRouter();
-  const address = router.query.campaignAddress;
-
-  
-
   return (
     <MainGrid>
       <Headline variant="h5">Create a Request</Headline>

@@ -43,7 +43,6 @@ const StyledLink = styled('span')(({ theme }) => ({
 const OverviewCard = ({ info, explanation }) => {
   const router = useRouter();
   const address = router.query.campaignAddress
-  console.log(address)
   return (
     <MainGrid item>
       <SubHeadline noWrap={true}>

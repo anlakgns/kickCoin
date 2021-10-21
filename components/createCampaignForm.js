@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 import { Button, Grid, Typography } from '@mui/material';
@@ -9,6 +9,8 @@ import factory from '../ethereum/factory';
 import web3 from '../ethereum/web3';
 import CircularProgress from '@mui/material/CircularProgress';
 import CampaignCard from './campaignCard';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
@@ -59,113 +61,202 @@ const SubHeadline = styled(Typography)(({ theme }) => ({
 }));
 
 const CreateCampaignForm = ({ deployedCampaignsList }) => {
-  const [minContribution, setMinContribution] = useState('');
-  const [projectName, setProjectName] = useState('');
-  const [projectAim, setProjectAim] = useState('');
-  const [financialAim, setFinancialAim] = useState('');
-  const [imageURL, setImageURL] = useState('');
   const [spinner, setSpinner] = useState(false);
 
-  const dummyCampaignInfo = {
-    minContribution,
+  const formik = useFormik({
+    initialValues: {
+      minContribution: '',
+      projectName: '',
+      projectAim: '',
+      financialAim: '',
+      imageURL: '',
+    },
+    validationSchema: Yup.object({
+      minContribution: Yup.number('Please intert a number')
+        .positive('The amount should be positive.')
+        .integer(
+          'In Wie unit, there is no decimals. Please insert a integer number.'
+        )
+        .required('Please provide a min contribution amount.'),
+      projectName: Yup.string().required('Please insert a project name').trim(),
+      projectAim: Yup.string().required('Please insert a project aim').trim(),
+      financialAim: Yup.number().positive('The amount should be positive'),
+      imageURL: Yup.string().url('Please insert an URL').trim(),
+    }),
+    onSubmit: async (values) => {
+      setSpinner(true);
+      try {
+        const accounts = await web3.eth.getAccounts();
+
+        // no need to specify gas amount, metamask will do it for us.
+        await factory.methods
+          .createCampaign(
+            values.minContribution,
+            values.projectName,
+            values.projectAim,
+            values.imageURL,
+            values.financialAim
+          )
+          .send({
+            from: accounts[0],
+          });
+      } catch (err) {
+        console.log(err.message);
+      }
+      setSpinner(false);
+      router.push('/');
+    },
+  });
+
+  const campaignInfo = {
+    minContribution: formik.values.minContribution,
     balance: 10,
-    projectName,
-    projectAim,
+    projectName: formik.values.projectName,
+    projectAim: formik.values.projectAim,
     financialAim: 20,
     imageURL:
-      imageURL === ''
+      formik.values.imageURL === ''
         ? 'https://images.unsplash.com/photo-1504805572947-34fad45aed93?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80'
-        : imageURL,
+        : formik.values.imageURL,
   };
 
   const router = useRouter();
 
-  const submitHandler = async (e) => {
-    e.preventDefault();
+  // const submitHandler = async (e) => {
+  //   e.preventDefault();
 
-    setSpinner(true);
-    try {
-      const accounts = await web3.eth.getAccounts();
+  //   setSpinner(true);
+  //   try {
+  //     const accounts = await web3.eth.getAccounts();
 
-      // no need to specify gas amount, metamask will do it for us.
-      await factory.methods
-        .createCampaign(
-          minContribution,
-          projectName,
-          projectAim,
-          imageURL,
-          financialAim
-        )
-        .send({
-          from: accounts[0],
-        });
-    } catch (err) {
-      console.log(err.message);
-    }
-    setSpinner(false);
-    router.push('/');
-  };
+  //     // no need to specify gas amount, metamask will do it for us.
+  //     await factory.methods
+  //       .createCampaign(
+  //         minContribution,
+  //         projectName,
+  //         projectAim,
+  //         imageURL,
+  //         financialAim
+  //       )
+  //       .send({
+  //         from: accounts[0],
+  //       });
+  //   } catch (err) {
+  //     console.log(err.message);
+  //   }
+  //   setSpinner(false);
+  //   router.push('/');
+  // };
 
   return (
     <MainGrid>
-      <form onSubmit={(e) => submitHandler(e)}>
+      <form onSubmit={formik.handleSubmit}>
         <Grid item container direction="column">
           <StyledTextField
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.projectName}
+            name="projectName"
+            error={Boolean(
+              formik.touched.projectName && formik.errors.projectName
+            )}
+            helperText={
+              formik.touched.projectName && formik.errors.projectName
+                ? formik.errors.projectName
+                : ''
+            }
             color="secondary"
             label="Project Name"
             variant="standard"
-            value={projectName}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
-            onChange={(e) => setProjectName(e.target.value)}
           />
           <StyledTextField
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.financialAim}
+            error={Boolean(
+              formik.touched.financialAim && formik.errors.financialAim
+            )}
+            helperText={
+              formik.touched.financialAim && formik.errors.financialAim
+                ? formik.errors.financialAim
+                : ''
+            }
+            name="financialAim"
             color="secondary"
             label="Budget Goal to Start The Project (Ether)"
             variant="standard"
-            value={financialAim}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
-            onChange={(e) => setFinancialAim(e.target.value)}
           />
           <StyledTextField
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.minContribution}
+            name="minContribution"
+            error={Boolean(
+              formik.touched.minContribution && formik.errors.minContribution
+            )}
+            helperText={
+              formik.touched.minContribution && formik.errors.minContribution
+                ? formik.errors.minContribution
+                : ''
+            }
             color="secondary"
             label="Minimum Contribution (Wei)"
             variant="standard"
-            value={minContribution}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
-            onChange={(e) => setMinContribution(e.target.value)}
           />
           <StyledTextField
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.projectAim}
+            name="projectAim"
+            error={Boolean(
+              formik.touched.projectAim && formik.errors.projectAim
+            )}
+            helperText={
+              formik.touched.projectAim && formik.errors.projectAim
+                ? formik.errors.projectAim
+                : ''
+            }
             color="secondary"
             label="Project Aim"
             variant="standard"
             multiline
-            value={projectAim}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
-            onChange={(e) => setProjectAim(e.target.value)}
           />
           <StyledTextField
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.imageURL}
+            error={Boolean(formik.touched.imageURL && formik.errors.imageURL)}
+            helperText={
+              formik.touched.imageURL && formik.errors.imageURL
+                ? formik.errors.imageURL
+                : ''
+            }
+            name="imageURL"
             color="secondary"
             label="Cover Image URL"
             variant="standard"
-            value={imageURL}
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
-            onChange={(e) => setImageURL(e.target.value)}
           />
           <Grid item>
             <SubHeadline variant="subtitle1">
               Preview of your campaign
             </SubHeadline>
-            <CampaignCard campaingInfo={dummyCampaignInfo} />
+            <CampaignCard campaingInfo={campaignInfo} />
           </Grid>
 
           <CreateButton
             type="submit"
             variant="contained"
+            disabled={spinner}
             endIcon={spinner ? '' : <AddIcon />}
           >
             {spinner ? <CircularProgress color="primary" /> : 'Create!'}
