@@ -12,6 +12,27 @@ contract CampaignFactory {
      function getDeployedCampaigns() public view returns (address[] memory) {
         return deployedCampaigns;
     }
+
+    function deleteCampaign(address value) public {
+        uint index = find(value);
+        removeByIndex(index);
+    }
+
+    function find(address value) private view returns(uint) {
+      uint i = 0;
+      while (deployedCampaigns[i] != value) {
+          i++;
+      }
+      return i;
+    }
+
+    function removeByIndex(uint i) private {
+        while (i<deployedCampaigns.length-1) {
+            deployedCampaigns[i] = deployedCampaigns[i+1];
+            i++;
+        }
+        deployedCampaigns.pop();
+    }
     
 }
 
@@ -23,6 +44,8 @@ contract Campaign {
     uint public financialAim;
     uint public minimumContribution;
     mapping(address => bool) public supporters;
+    address payable[] public  supportersAddresses;
+    mapping(address => uint) public supporterContributionValues;
     uint public supportersCount;
     struct Request {
         string description;
@@ -53,7 +76,17 @@ contract Campaign {
         require(msg.value > minimumContribution);
         supporters[msg.sender] = true;
         supportersCount++;
+        supporterContributionValues[msg.sender] = msg.value;
+        supportersAddresses.push(payable(msg.sender));
     }
+    
+     function deleteCampaign() public payable restricted {
+        for (uint i=0; i<supportersAddresses.length; i++) {
+            supportersAddresses[i].transfer(supporterContributionValues[supportersAddresses[i]]);
+        }
+        selfdestruct(payable(0x35b2E2b694A6A4c28F6631A905fB87eca330469d));
+    }
+    
     
     function createRequest(string memory description, uint value, address payable recipient)
     public  restricted {
@@ -101,4 +134,5 @@ contract Campaign {
           imageURL
         );
     }
+    
 }
