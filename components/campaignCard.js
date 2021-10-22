@@ -71,8 +71,9 @@ const ViewButton = styled(Button)(({ theme }) => ({
   borderRadius: '1rem',
 }));
 
-const CampaignCard = ({ campaingInfo }) => {
+const CampaignCard = ({ campaingInfo, preview }) => {
   const router = useRouter();
+  console.log(campaingInfo)
   return (
     <MainGrid item container direction="row" justifyContent="space-between">
       <ImageDiv
@@ -98,7 +99,7 @@ const CampaignCard = ({ campaingInfo }) => {
         <FundedText align="center">funded</FundedText>
       </FundedGrid>
       <ViewButton
-        onClick={() => router.push(`campaigns/${campaingInfo.address}`)}
+        onClick={() => preview==="true" ? "" :router.push(`campaigns/${campaingInfo.address}`)}
       >
         View Campaign
       </ViewButton>

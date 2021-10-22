@@ -12,9 +12,9 @@ const OverviewList = ({ cardsInfo }) => {
     'This is the minimum contribution amount for this campaign.',
     'The total amount of ethereum collected to support this campaign.',
     'Total number of spending request made by manager of this campaign.',
-    'Total number of supporters for this campaign',
+    'Total number of supporters for this campaign.',
     'Budget aim to be succesful for this campaign which is decided by manager.',
-    'The address of the manager of this campaign in the network',
+    'The address of the manager of this campaign in the network.',
   ];
 
   return (

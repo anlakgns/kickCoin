@@ -11,21 +11,14 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CampaignCard from './campaignCard';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import FeedbackCard from './feedbackCard';
+import FeedbackBar from './feedbackBar';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
   borderRadius: '1rem',
   overflow: 'hidden',
   padding: '2rem 5rem',
-}));
-
-const Divider = styled('div')(({ theme }) => ({
-  border: `0.20rem solid ${theme.palette.custom.blueLight} `,
-  width: '100%',
-  marginTop: '0.4rem',
-  marginBottom: '2rem',
-  borderRadius: '0.15rem',
-  opacity: 0.7,
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -44,15 +37,6 @@ const CreateButton = styled(Button)(({ theme }) => ({
   width: '20rem',
 }));
 
-const ImageDiv = styled('div')(({ theme }) => ({
-  backgroundRepeat: 'no-repeat',
-  backgroundPosition: 'center',
-  backgroundSize: 'cover',
-  height: '12rem',
-  width: '25rem',
-  borderRadius: '1rem',
-}));
-
 const SubHeadline = styled(Typography)(({ theme }) => ({
   color: theme.palette.secondary.main,
   marginTop: '2rem',
@@ -62,6 +46,16 @@ const SubHeadline = styled(Typography)(({ theme }) => ({
 
 const CreateCampaignForm = ({ deployedCampaignsList }) => {
   const [spinner, setSpinner] = useState(false);
+  const router = useRouter();
+  
+  // Cards
+  const [feedbackCardWaitingOpen, setFeedbackWaitingCardOpen] = useState(false);
+  const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
+  const [feedbackCardErrorText, setFeedbackCardErrorText] = useState('');
+
+  // Bars
+  const [feedbackBarSuccessOpen, setFeedbackBarSuccessOpen] = useState(false);
+  const [feedbackBarErrorOpen, setFeedbackBarErrorOpen] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -74,9 +68,6 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
     validationSchema: Yup.object({
       minContribution: Yup.number('Please intert a number')
         .positive('The amount should be positive.')
-        .integer(
-          'In Wie unit, there is no decimals. Please insert a integer number.'
-        )
         .required('Please provide a min contribution amount.'),
       projectName: Yup.string().required('Please insert a project name').trim(),
       projectAim: Yup.string().required('Please insert a project aim').trim(),
@@ -85,28 +76,45 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
     }),
     onSubmit: async (values) => {
       setSpinner(true);
+      setFeedbackWaitingCardOpen(true);
       try {
         const accounts = await web3.eth.getAccounts();
 
         // no need to specify gas amount, metamask will do it for us.
         await factory.methods
           .createCampaign(
-            values.minContribution,
+            web3.utils.toWei(values.minContribution, 'ether'),
             values.projectName,
             values.projectAim,
             values.imageURL,
-            values.financialAim
+            web3.utils.toWei(values.financialAim, 'ether')
           )
           .send({
             from: accounts[0],
           });
+        setSpinner(false);
+        setFeedbackWaitingCardOpen(false);
+        setFeedbackBarSuccessOpen(true);
+        setTimeout(() => {
+          router.push('/');
+        }, [1500]);
       } catch (err) {
-        console.log(err.message);
+        setSpinner(false);
+        setFeedbackWaitingCardOpen(false);
+        setFeedbackErrorCardOpen(true);
+        setFeedbackCardErrorText(err.message);
       }
-      setSpinner(false);
-      router.push('/');
     },
   });
+
+  // Showing error bar after error card closed.
+  useEffect(() => {
+    if (Boolean(feedbackCardErrorText) && !feedbackCardErrorOpen) {
+      setFeedbackBarErrorOpen(true);
+    }
+  }, [feedbackCardErrorText, feedbackCardErrorOpen]);
+
+
 
   const campaignInfo = {
     minContribution: formik.values.minContribution,
@@ -119,34 +127,6 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
         ? 'https://images.unsplash.com/photo-1504805572947-34fad45aed93?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1470&q=80'
         : formik.values.imageURL,
   };
-
-  const router = useRouter();
-
-  // const submitHandler = async (e) => {
-  //   e.preventDefault();
-
-  //   setSpinner(true);
-  //   try {
-  //     const accounts = await web3.eth.getAccounts();
-
-  //     // no need to specify gas amount, metamask will do it for us.
-  //     await factory.methods
-  //       .createCampaign(
-  //         minContribution,
-  //         projectName,
-  //         projectAim,
-  //         imageURL,
-  //         financialAim
-  //       )
-  //       .send({
-  //         from: accounts[0],
-  //       });
-  //   } catch (err) {
-  //     console.log(err.message);
-  //   }
-  //   setSpinner(false);
-  //   router.push('/');
-  // };
 
   return (
     <MainGrid>
@@ -185,7 +165,7 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
             }
             name="financialAim"
             color="secondary"
-            label="Budget Goal to Start The Project (Ether)"
+            label="Budget Goal to Start The Project (in Ether)"
             variant="standard"
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
@@ -204,7 +184,7 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
                 : ''
             }
             color="secondary"
-            label="Minimum Contribution (Wei)"
+            label="Minimum Contribution (in Ether)"
             variant="standard"
             inputProps={{ style: { color: 'white' } }}
             InputLabelProps={{ sx: { color: '#05AAE0' } }}
@@ -250,7 +230,7 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
             <SubHeadline variant="subtitle1">
               Preview of your campaign
             </SubHeadline>
-            <CampaignCard campaingInfo={campaignInfo} />
+            <CampaignCard campaingInfo={campaignInfo} preview="true" />
           </Grid>
 
           <CreateButton
@@ -263,6 +243,32 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
           </CreateButton>
         </Grid>
       </form>
+      <FeedbackCard
+        type="waiting"
+        open={feedbackCardWaitingOpen}
+        setOpen={setFeedbackWaitingCardOpen}
+        headline="Validation Process"
+        contentText="Every attempt to change in ethereum network needs to validated by miners. This process takes 15-30 seconds in ethereum network. Please be patient and wait we will feedback you when the process is done. "
+      />
+      <FeedbackCard
+        type="error"
+        open={feedbackCardErrorOpen}
+        setOpen={setFeedbackErrorCardOpen}
+        headline="Something went wrong"
+        contentText={feedbackCardErrorText}
+      />
+      <FeedbackBar
+        type="success"
+        open={feedbackBarSuccessOpen}
+        setOpen={setFeedbackBarSuccessOpen}
+        contentText="Your campaign has created successfully."
+      />
+      <FeedbackBar
+        type="error"
+        open={feedbackBarErrorOpen}
+        setOpen={setFeedbackBarErrorOpen}
+        contentText="Your campaign has not created."
+      />
     </MainGrid>
   );
 };

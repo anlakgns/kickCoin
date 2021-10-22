@@ -10,6 +10,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Campaign from '../ethereum/campaign';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import FeedbackCard from './feedbackCard';
+import FeedbackBar from './feedbackBar';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
@@ -39,6 +41,15 @@ const CreateRequestForm = () => {
   const router = useRouter();
   const address = router.query.campaignAddress;
 
+  // Cards
+  const [feedbackCardWaitingOpen, setFeedbackWaitingCardOpen] = useState(false);
+  const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
+  const [feedbackCardErrorText, setFeedbackCardErrorText] = useState('');
+
+  // Bars
+  const [feedbackBarSuccessOpen, setFeedbackBarSuccessOpen] = useState(false);
+  const [feedbackBarErrorOpen, setFeedbackBarErrorOpen] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       description: '',
@@ -53,6 +64,7 @@ const CreateRequestForm = () => {
     }),
     onSubmit: async (values) => {
       setSpinner(true);
+      setFeedbackWaitingCardOpen(true);
 
       try {
         const campaign = await Campaign(address);
@@ -67,11 +79,16 @@ const CreateRequestForm = () => {
           .send({
             from: accounts[0],
           });
+        setSpinner(false);
+        setFeedbackWaitingCardOpen(false);
+        setFeedbackBarSuccessOpen(true);
         router.push(`/campaigns/${address}/requests`);
       } catch (err) {
-        setErrorMessage(err.message);
+        setSpinner(false);
+        setFeedbackWaitingCardOpen(false);
+        setFeedbackErrorCardOpen(true);
+        setFeedbackCardErrorText(err.message);
       }
-      setSpinner(false);
     },
   });
 
@@ -142,6 +159,32 @@ const CreateRequestForm = () => {
           </CreateButton>
         </Grid>
       </form>
+      <FeedbackCard
+        type="waiting"
+        open={feedbackCardWaitingOpen}
+        setOpen={setFeedbackWaitingCardOpen}
+        headline="Validation Process"
+        contentText="Every attempt to change in ethereum network needs to validated by miners. This process takes 15-30 seconds in ethereum network. Please be patient and wait we will feedback you when the process is done. "
+      />
+      <FeedbackCard
+        type="error"
+        open={feedbackCardErrorOpen}
+        setOpen={setFeedbackErrorCardOpen}
+        headline="Something went wrong"
+        contentText={feedbackCardErrorText}
+      />
+      <FeedbackBar
+        type="success"
+        open={feedbackBarSuccessOpen}
+        setOpen={setFeedbackBarSuccessOpen}
+        contentText="Your request has created successfully."
+      />
+      <FeedbackBar
+        type="error"
+        open={feedbackBarErrorOpen}
+        setOpen={setFeedbackBarErrorOpen}
+        contentText="Your request has not created."
+      />
     </MainGrid>
   );
 };

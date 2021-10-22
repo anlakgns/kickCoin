@@ -86,11 +86,11 @@ export async function getStaticProps(context) {
   return {
     props: {
       cardsInfo: {
-        minimumContribution: summary[0],
+        minimumContribution: web3.utils.fromWei(summary[0], 'ether'),
         balance: web3.utils.fromWei(summary[1], 'ether'),
         requestsCount: summary[2],
         supportersCount: summary[3],
-        financialAim: summary[7],
+        financialAim: web3.utils.fromWei(summary[7], 'ether'),
         manager: summary[4],
       },
       additionalInfo: {

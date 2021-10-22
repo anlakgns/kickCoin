@@ -1,6 +1,6 @@
 import { Typography, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import NoteCard from '../components/noteCard.js'
+import NoteBox from '../components/noteBox.js'
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
@@ -22,12 +22,13 @@ const Divider = styled('div')(({ theme }) => ({
   opacity: 0.7,
 }));
 
+
 const Notes = () => {
   return (
     <MainGrid container direction="column">
       <Headline variant="h5">Notes</Headline>
       <Divider />
-      <NoteCard/>
+      <NoteBox/>
     </MainGrid>
   );
 };

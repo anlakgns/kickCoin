@@ -53,14 +53,14 @@ export async function getStaticProps() {
     props: {
       summaryList: summariesArray.map((campaignSummary, index) => {
         return {
-          minimumContribution: campaignSummary[0],
+          minimumContribution: web3.utils.fromWei(campaignSummary[0], 'ether'),
           balance: web3.utils.fromWei(campaignSummary[1], 'ether'),
           requestsCount: campaignSummary[2],
           supportersCount: campaignSummary[3],
           manager: campaignSummary[4],
           projectName: campaignSummary[5],
           projectAim: campaignSummary[6],
-          financialAim: campaignSummary[7],
+          financialAim: web3.utils.fromWei(campaignSummary[7], 'ether'),
           imageURL: campaignSummary[8],
           address: campaignslist[index],
         };
