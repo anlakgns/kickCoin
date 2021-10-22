@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 contract CampaignFactory {
     address[] public deployedCampaigns;
+    Campaign deletedCampaign;
     
     function createCampaign(uint minimum,  string memory pName, string memory pAim, string memory imagePath, uint financialGoal) public {
         address newCampaign = address(new Campaign(minimum, msg.sender, pName,pAim, imagePath, financialGoal));
@@ -16,6 +17,8 @@ contract CampaignFactory {
     function deleteCampaign(address value) public {
         uint index = find(value);
         removeByIndex(index);
+        deletedCampaign = Campaign(value);
+        deletedCampaign.deleteCampaign();
     }
 
     function find(address value) private view returns(uint) {
@@ -80,7 +83,7 @@ contract Campaign {
         supportersAddresses.push(payable(msg.sender));
     }
     
-     function deleteCampaign() public payable restricted {
+    function deleteCampaign() public payable  {
         for (uint i=0; i<supportersAddresses.length; i++) {
             supportersAddresses[i].transfer(supporterContributionValues[supportersAddresses[i]]);
         }
