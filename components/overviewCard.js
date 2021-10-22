@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
@@ -6,6 +6,8 @@ import { useRouter } from 'next/router';
 import web3 from '../ethereum/web3';
 import factory from '../ethereum/factory';
 import Campaign from '../ethereum/campaign';
+import FeedbackCard from './feedbackCard';
+import FeedbackBar from './feedbackBar';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   height: '10rem',
@@ -45,24 +47,58 @@ const StyledLink = styled('span')(({ theme }) => ({
 const OverviewCard = ({ info, explanation }) => {
   const router = useRouter();
   const address = router.query.campaignAddress;
+  const [isSure, setIsSure] = useState(false);
 
-  const deleteCampaignHandler = async () => {
+  // Cards
+  const [feedbackCardDeletingProcessOpen, setFeedbackCardDeletingProcessOpen] =
+    useState(false);
+  const [feedbackCardQuestionOpen, setFeedbackQuestionCardOpen] =
+    useState(false);
+  const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
+  const [feedbackCardErrorText, setFeedbackCardErrorText] = useState('');
+
+  // Bars
+  const [feedbackBarSuccessOpen, setFeedbackBarSuccessOpen] = useState(false);
+  const [feedbackBarErrorOpen, setFeedbackBarErrorOpen] = useState(false);
+
+  const deleteCampaignCardHandler = () => {
+    setFeedbackQuestionCardOpen(true);
+  };
+
+  const deleteCampaignCancelButton = () => {
+    setFeedbackQuestionCardOpen(false);
+  };
+
+  const deleteCampaignDeleteButton = async () => {
     try {
       const accounts = await web3.eth.getAccounts();
-      const campaign = await Campaign(address);
 
-      await campaign.methods.deleteCampaign().send({
-        from: accounts[0],
-      });
-
+      setFeedbackQuestionCardOpen(false);
+      setFeedbackCardDeletingProcessOpen(true);
       await factory.methods.deleteCampaign(address).send({
         from: accounts[0],
       });
-      router.push('/');
+      setFeedbackCardDeletingProcessOpen(false);
+      setFeedbackBarSuccessOpen(true);
+
+      setTimeout(() => {
+        router.push('/');
+      }, [2000]);
     } catch (err) {
       console.log(err);
+      setFeedbackQuestionCardOpen(false);
+      setFeedbackCardDeletingProcessOpen(false);
+      setFeedbackCardErrorText(err.message);
+      setFeedbackErrorCardOpen(true);
     }
   };
+
+  // Showing error bar after error card closed.
+  useEffect(() => {
+    if (Boolean(feedbackCardErrorText) && !feedbackCardErrorOpen) {
+      setFeedbackBarErrorOpen(true);
+    }
+  }, [feedbackCardErrorText, feedbackCardErrorOpen]);
 
   return (
     <MainGrid item>
@@ -81,9 +117,50 @@ const OverviewCard = ({ info, explanation }) => {
           ''
         )}
         {info[0] === 'manager' ? (
-          <StyledLink onClick={() => deleteCampaignHandler()}>
+          <StyledLink onClick={() => deleteCampaignCardHandler()}>
             &nbsp;Delete Campaign
           </StyledLink>
+        ) : (
+          ''
+        )}
+        {info[0] === 'manager' ? (
+          <>
+            <FeedbackCard
+              type="waiting"
+              open={feedbackCardDeletingProcessOpen}
+              setOpen={setFeedbackCardDeletingProcessOpen}
+              headline="Deleting Process"
+              contentText="All amount of ether in this campaign are paying back your supporters and your campaign is deleting permanently. Please wait about 15-30 seconds. "
+            />
+            <FeedbackCard
+              type="question"
+              open={feedbackCardQuestionOpen}
+              setOpen={setFeedbackQuestionCardOpen}
+              cancel={deleteCampaignCancelButton}
+              deletePermanently={deleteCampaignDeleteButton}
+              headline="Deleting Process"
+              contentText="We will payback all balance in this campaing to your supporters and delete this campaign permanently. Are you sure ?"
+            />
+            <FeedbackCard
+              type="error"
+              open={feedbackCardErrorOpen}
+              setOpen={setFeedbackErrorCardOpen}
+              headline="Something went wrong"
+              contentText={feedbackCardErrorText}
+            />
+            <FeedbackBar
+              type="success"
+              open={feedbackBarSuccessOpen}
+              setOpen={setFeedbackBarSuccessOpen}
+              contentText="Your campaign has deleted successfully."
+            />
+            <FeedbackBar
+              type="error"
+              open={feedbackBarErrorOpen}
+              setOpen={setFeedbackBarErrorOpen}
+              contentText="The delete process has not completed."
+            />
+          </>
         ) : (
           ''
         )}

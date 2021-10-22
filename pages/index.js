@@ -28,6 +28,7 @@ const Divider = styled('div')(({ theme }) => ({
 }));
 
 const Home = ({ summaryList }) => {
+ 
   return (
     <MainGrid>
       <Headline variant="h5">Open Campaigns</Headline>

@@ -14,10 +14,17 @@ const StyledWaitingDialog = styled(Dialog)(({ theme }) => ({
   },
 }));
 
+const StyledQuestionDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialog-paper': {
+    backgroundColor: theme.palette.custom.blueDark,
+    color: theme.palette.custom.orangeLight,
+  },
+}));
+
 const StyledErrorDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
-    backgroundColor: theme.palette.custom.red,
-    color: theme.palette.custom.orangeLight,
+    backgroundColor: theme.palette.custom.blueDark,
+    color: theme.palette.custom.red,
   },
 }));
 
@@ -34,14 +41,28 @@ const OkeyButton = styled(Button)(({ theme }) => ({
   color: theme.palette.custom.textWhite,
   fontWeight: 'bold',
   margin: '1rem',
-  width: '15rem',
-  height: '5rem',
+  width: '10rem',
+  height: '4rem',
 }));
 
-const FeedbackCard = ({ open, setOpen, headline, contentText, type }) => {
+const GridButton = styled(Grid)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'center',
+}));
+
+const FeedbackCard = ({
+  open,
+  setOpen,
+  headline,
+  deletePermanently,
+  contentText,
+  type,
+  cancel,
+}) => {
   return (
     <div>
-      {type === 'waiting' ? (
+      {/* Waiting Type */}
+      {type === 'waiting' && (
         <StyledWaitingDialog open={open}>
           <DialogTitle>{headline}</DialogTitle>
           <DialogContent>
@@ -51,16 +72,42 @@ const FeedbackCard = ({ open, setOpen, headline, contentText, type }) => {
             </Grid>
           </DialogContent>
         </StyledWaitingDialog>
-      ) : (
+      )}
+
+      {/* Error Type */}
+      {type === 'error' && (
         <StyledErrorDialog open={open}>
           <DialogTitle>{headline}</DialogTitle>
           <DialogContent>
             <StyledDialogContentText>{contentText}</StyledDialogContentText>
-            <OkeyButton variant="outlined" onClick={() => setOpen(false)}>
-              Okey
-            </OkeyButton>
+            <GridButton>
+              <OkeyButton variant="outlined" onClick={() => setOpen(false)}>
+                Okey
+              </OkeyButton>
+            </GridButton>
           </DialogContent>
         </StyledErrorDialog>
+      )}
+
+      {/* Question Type */}
+      {type === 'question' && (
+        <StyledQuestionDialog open={open}>
+          <DialogTitle>{headline}</DialogTitle>
+          <DialogContent>
+            <StyledDialogContentText>{contentText}</StyledDialogContentText>
+            <GridButton>
+              <OkeyButton
+                variant="outlined"
+                onClick={() => deletePermanently()}
+              >
+                Delete
+              </OkeyButton>
+              <OkeyButton variant="outlined" onClick={() => cancel()}>
+                Cancel
+              </OkeyButton>
+            </GridButton>
+          </DialogContent>
+        </StyledQuestionDialog>
       )}
     </div>
   );
