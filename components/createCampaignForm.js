@@ -47,7 +47,7 @@ const SubHeadline = styled(Typography)(({ theme }) => ({
 const CreateCampaignForm = ({ deployedCampaignsList }) => {
   const [spinner, setSpinner] = useState(false);
   const router = useRouter();
-  
+
   // Cards
   const [feedbackCardWaitingOpen, setFeedbackWaitingCardOpen] = useState(false);
   const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
@@ -70,7 +70,10 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
         .positive('The amount should be positive.')
         .required('Please provide a min contribution amount.'),
       projectName: Yup.string().required('Please insert a project name').trim(),
-      projectAim: Yup.string().required('Please insert a project aim').trim(),
+      projectAim: Yup.string()
+        .max(200, 'No more than 200 characters.')
+        .required('Please insert a project aim')
+        .trim(),
       financialAim: Yup.number().positive('The amount should be positive'),
       imageURL: Yup.string().url('Please insert an URL').trim(),
     }),
@@ -113,8 +116,6 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
       setFeedbackBarErrorOpen(true);
     }
   }, [feedbackCardErrorText, feedbackCardErrorOpen]);
-
-
 
   const campaignInfo = {
     minContribution: formik.values.minContribution,

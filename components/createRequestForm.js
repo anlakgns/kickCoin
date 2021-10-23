@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 import { Button, Grid } from '@mui/material';
@@ -91,6 +91,13 @@ const CreateRequestForm = () => {
       }
     },
   });
+
+  // Showing error bar after error card closed.
+  useEffect(() => {
+    if (Boolean(feedbackCardErrorText) && !feedbackCardErrorOpen) {
+      setFeedbackBarErrorOpen(true);
+    }
+  }, [feedbackCardErrorText, feedbackCardErrorOpen]);
 
   return (
     <MainGrid>

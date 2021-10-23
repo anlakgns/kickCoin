@@ -10,6 +10,13 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   gap: '1rem',
 }));
 
+const CardsGrid = styled(Grid)(({ theme }) => ({
+  display: 'flex',
+  flexWrap: "wrap",
+  flexDirection: 'row',
+  gap: '3rem',
+}));
+
 const PaginationGrid = styled(Grid)(({ theme }) => ({
   width: '100%',
   display: 'flex',
@@ -42,7 +49,8 @@ const CampaignList = ({ summaryList }) => {
   };
 
   return (
-    <MainGrid item container>
+    <MainGrid item container >
+      <CardsGrid item container direction="row">
       {summaryListPaged.map((campaingInfo) => {
         return (
           <CampaignCard
@@ -51,6 +59,7 @@ const CampaignList = ({ summaryList }) => {
           />
         );
       })}
+      </CardsGrid>
       <PaginationGrid>
         <StyledPagination
           count={Math.ceil(summaryList.length / campaignAmountPerPage)}

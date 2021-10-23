@@ -6,10 +6,17 @@ import Tab from '@mui/material/Tab';
 import Button from '@mui/material/Button';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '1rem 1rem',
   marginTop: '4rem',
+  '@media (max-width: 1000px)': {
+    maxWidth: '20rem',
+    backgroundColor: theme.palette.custom.blueDark,
+    height: '100vh',
+    marginTop: '0rem',
+  },
 }));
 
 const HeadlineButton = styled(Button)(({ theme }) => ({
@@ -23,7 +30,6 @@ const HeadlineButton = styled(Button)(({ theme }) => ({
   '&:hover': {
     backgroundColor: 'transparent',
   },
-  '& .MuiButton-text': {},
 }));
 
 const Headline = styled(Typography)(({ theme }) => ({
@@ -44,6 +50,9 @@ const Description = styled(Typography)(({ theme }) => ({
   opacity: 0.7,
   padding: '0rem 1rem',
   marginTop: '2rem',
+  '@media (max-width: 1000px)': {
+    marginTop: '1rem',
+  },
 }));
 
 const About = styled(Typography)(({ theme }) => ({
@@ -94,35 +103,48 @@ const LogoGrid = styled(Grid)(({ theme }) => ({}));
 const MenuGrid = styled(Grid)(({ theme }) => ({
   marginTop: '3rem',
   width: '100%',
+  '@media (max-width: 1000px)': {
+    marginTop: '0rem',
+  },
 }));
 
 const AboutGrid = styled(Grid)(({ theme }) => ({
   marginTop: '3rem',
+  '@media (max-width: 1000px)': {
+    marginTop: '0rem',
+  },
 }));
 
 const WarningSpan = styled('span')(({ theme }) => ({
   color: theme.palette.custom.orangeLight,
 }));
 
-const Header = () => {
+const Sidebar = ({ setDrawerOpen }) => {
   const router = useRouter();
   const [value, setValue] = useState(0);
   const [warningMessage, setWarningMessage] = useState();
+  const matches1000 = useMediaQuery('(max-width: 1000px)');
 
   // Routing
   useEffect(() => {
     switch (value) {
       case 0:
         router.push('/');
+        matches1000 ? setDrawerOpen(false) : '';
         break;
       case 1:
         router.push('/campaigns/new');
+        matches1000 ? setDrawerOpen(false) : '';
+
         break;
       case 2:
         router.push('/notes');
+        matches1000 ? setDrawerOpen(false) : '';
+
         break;
       default:
         router.push('/');
+        matches1000 ? setDrawerOpen(false) : '';
     }
   }, [value]);
 
@@ -167,7 +189,15 @@ const Header = () => {
             <span>
               <WarningSpan>Approve, Finalize</WarningSpan> and{' '}
               <WarningSpan>Add Request</WarningSpan> actions can only be taken
-              by the manager of this campaign
+              by the manager of this campaign.
+            </span>
+          );
+
+        case '/campaigns/[campaignAddress]/requests/new':
+          return (
+            <span>
+              <WarningSpan>Create</WarningSpan> action can only be taken by the
+              manager of this campaign.
             </span>
           );
 
@@ -182,7 +212,7 @@ const Header = () => {
         case '/notes':
           return (
             <span>
-              Please take a look at me when you hang around our website.
+              Please take a look at me while you hang around our website.
             </span>
           );
       }
@@ -195,7 +225,7 @@ const Header = () => {
   };
 
   return (
-    <MainGrid container direciton="column" alignItems="center">
+    <MainGrid container direciton="column" >
       <LogoGrid item>
         <HeadlineButton
           variation="text"
@@ -243,20 +273,4 @@ const Header = () => {
   );
 };
 
-export default Header;
-
-/*
-switch (router.pathname) {
-      case '/':
-        setWarningMessage(
-          "View Campaign action doesn't cost any gas for you. You can check campaigns safely."
-        );
-        break;
-      case '/campaigns/[campaignAddress]':
-        setWarningMessage(
-          "View Results action doesn't cost any gas for you. You can check campaigns. However Contribute cost you the amount of contribution you make and some trivial gas. "
-        );
-        break;
-    }
- 
- */
+export default Sidebar;

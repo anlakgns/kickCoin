@@ -37,11 +37,11 @@ const ContributeButton = styled(Button)(({ theme }) => ({
   height: '5rem',
 }));
 
-const ContributeForm = () => {
+const ContributeForm = ({ minContribution }) => {
   const [spinner, setSpinner] = useState(false);
   const router = useRouter();
   const address = router.query.campaignAddress;
-
+  console.log(minContribution)
   // Cards
   const [feedbackCardWaitingOpen, setFeedbackWaitingCardOpen] = useState(false);
   const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
@@ -58,6 +58,10 @@ const ContributeForm = () => {
     validationSchema: Yup.object({
       contribution: Yup.number('Please intert a number')
         .positive('The amount should be positive.')
+        .moreThan(
+          +minContribution,
+          'Please provide more than minimum contribution amount.'
+        )
         .required('Please provide a min contribution amount.'),
     }),
     onSubmit: async (values) => {
@@ -76,6 +80,8 @@ const ContributeForm = () => {
         setSpinner(false);
         setFeedbackWaitingCardOpen(false);
         setFeedbackBarSuccessOpen(true);
+        
+        router.replace(`/campaigns/${address}`)
       } catch (err) {
         setSpinner(false);
         setFeedbackWaitingCardOpen(false);
