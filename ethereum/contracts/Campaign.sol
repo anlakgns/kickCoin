@@ -53,6 +53,7 @@ contract Campaign {
     uint public supportersCount;
     struct Request {
         string description;
+        string status;
         uint value;
         address payable recipient;
         bool complete;
@@ -104,6 +105,7 @@ contract Campaign {
         r.recipient = recipient;
         r.complete = false;
         r.approvalCount = 0;
+        r.status = "pending";
 
     }
     
@@ -131,6 +133,12 @@ contract Campaign {
         
         request.recipient.transfer(request.value);
         request.complete = true;
+        request.status = "finalized";
+    } 
+    
+      function deleteRequest(uint index) public restricted {
+        Request storage request = requests[index];
+        request.status = "deleted";
     } 
 
     function getSummary() public view returns (
