@@ -6,6 +6,7 @@ import web3 from '../../../ethereum/web3';
 import ContributeForm from '../../../components/contributeForm';
 import { styled } from '@mui/material/styles';
 import OverviewList from '../../../components/overviewList';
+import Headline from '../../../components/sharedUI/Headline';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
@@ -14,28 +15,12 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   },
 }));
 
-const Headline = styled(Typography)(({ theme }) => ({
-  fontWeight: 'bold',
-  color: theme.palette.custom.textWhite,
-  width: '100%',
-  marginTop: '3rem',
-}));
-
 const SubHeadline = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
   color: theme.palette.custom.blueLight,
   width: '100%',
   marginTop: '3rem',
   marginBottom: '1rem',
-}));
-
-const Divider = styled('div')(({ theme }) => ({
-  border: `0.20rem solid ${theme.palette.custom.blueLight} `,
-  width: '100%',
-  marginTop: '0.4rem',
-  marginBottom: '2rem',
-  borderRadius: '0.15rem',
-  opacity: 0.7,
 }));
 
 const About = styled(Typography)(({ theme }) => ({
@@ -53,10 +38,11 @@ const AboutGrid = styled(Grid)(({ theme }) => ({
 const CampaignOverview = ({ cardsInfo, additionalInfo }) => {
   return (
     <MainGrid>
-      <Headline variant="h5">
-        {additionalInfo?.projectName} Campaign Overview
-      </Headline>
-      <Divider />
+      <Headline
+        headlineText={`${additionalInfo?.projectName} Campaign Overview`}
+        backRouter="true"
+      />
+
       <AboutGrid>
         <SubHeadline align="left" variant="subtitle1">
           About{' '}

@@ -81,9 +81,16 @@ const RequestRow = ({ request, id, address, supportersCount, isManager }) => {
   const finalizeHandler = async () => {
     const accounts = await web3.eth.getAccounts();
 
+    // Already complete check
+    if (request.complete) {
+      setFeedbackCardErrorText('This request is already finalized');
+      setFeedbackErrorCardOpen(true);
+      return;
+    }
+
     // approval threshold check
     const isEnoughRate = request.approvalCount > supportersCount / 2;
-    console.log(isEnoughRate)
+    console.log(isEnoughRate);
     const isFinalizable = isEnoughRate && supportersCount != 0;
     if (!isFinalizable) {
       setFeedbackCardErrorText(

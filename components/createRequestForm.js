@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 import { Button, Grid } from '@mui/material';
@@ -36,7 +36,7 @@ const CreateButton = styled(Button)(({ theme }) => ({
   width: '20rem',
 }));
 
-const CreateRequestForm = () => {
+const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
   const [spinner, setSpinner] = useState(false);
   const router = useRouter();
   const address = router.query.campaignAddress;
@@ -63,6 +63,30 @@ const CreateRequestForm = () => {
         .required('Please provide a min contribution amount.'),
     }),
     onSubmit: async (values) => {
+      const accounts = await web3.eth.getAccounts();
+      const isManager = accounts[0] === manager;
+      if (!isManager) {
+        setFeedbackCardErrorText('Only the manager can make a request.')
+        setFeedbackErrorCardOpen(true)
+        router.push(`/campaigns/${address}/requests`)
+        return;
+      }
+      // enough balance check
+      const enoughBalanceCheck =
+        parseFloat(values.value) + parseFloat(requestsBalance) <=
+        parseFloat(balance);
+      console.log(enoughBalanceCheck);
+      if (!enoughBalanceCheck) {
+        setFeedbackCardErrorText(
+          `You don't have enough balance to make this request. You can request maximum ${
+            balance - requestsBalance
+          } ether for now unless you have more contributors. `
+        );
+        setFeedbackErrorCardOpen(true);
+        return;
+      }
+
+      // start process
       setSpinner(true);
       setFeedbackWaitingCardOpen(true);
 
