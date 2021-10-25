@@ -1,10 +1,8 @@
 import Drawer from '@mui/material/Drawer';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
 import { styled } from '@mui/material/styles';
 import SideBar from '../components/sidebar';
 
-const StyledDrawer = styled(Drawer)(({ theme }) => ({
+const StyledDrawer = styled(Drawer)(() => ({
   height: '100vh',
 }));
 
@@ -13,9 +11,12 @@ const DrawerMenu = ({ drawerOpen, setDrawerOpen }) => {
     <StyledDrawer
       anchor="left"
       open={drawerOpen}
+      ModalProps={{
+        keepMounted: true,
+      }}
       onClose={() => setDrawerOpen(false)}
     >
-      <SideBar setDrawerOpen={setDrawerOpen}  />
+      <SideBar setDrawerOpen={setDrawerOpen} />
     </StyledDrawer>
   );
 };

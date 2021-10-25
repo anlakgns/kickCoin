@@ -20,8 +20,10 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   flexDirection: 'row',
+  '@media (max-width: 660px)': {
+    flexDirection: 'column',
+  },
 }));
-
 const GridButtons = styled(Grid)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
@@ -29,8 +31,11 @@ const GridButtons = styled(Grid)(({ theme }) => ({
   justifyContent: 'space-evenly',
   width: '10rem',
   backgroundColor: 'red',
+  '@media (max-width: 660px)': {
+    flexDirection: 'row',
+    width: '100%',
+  },
 }));
-
 const GridItemsContainer = styled(Grid)(({ theme }) => ({
   padding: '2rem',
   flexGrow: 1,
@@ -47,7 +52,6 @@ const SubHeadline = styled(Typography)(({ theme }) => ({
   paddingBottom: '0.3rem',
   width: '100%',
 }));
-
 const Description = styled(Typography)(({ theme }) => ({
   color: theme.palette.custom.textWhite,
   width: '100%',
@@ -56,7 +60,6 @@ const Description = styled(Typography)(({ theme }) => ({
   paddingBottom: '0.4rem',
   fontSize: '0.8rem',
 }));
-
 const ApproveButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.custom.orange,
   color: theme.palette.custom.textWhite,
@@ -66,17 +69,28 @@ const ApproveButton = styled(Button)(({ theme }) => ({
   height: '100%',
   borderRadius: '0rem',
 }));
-
 const RequestFinalized = styled('div')(({ theme }) => ({
   position: 'absolute',
   top: '50%',
   left: '50%',
-  zIndex: 2000,
   transform: 'translate(-50%, -50%)',
   color: theme.palette.custom.green,
   fontSize: '4rem',
+  '@media (max-width: 660px)': {
+    fontSize: '3rem',
+  },
 }));
-
+const RequestDeleted = styled('div')(({ theme }) => ({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  color: theme.palette.custom.red,
+  fontSize: '4rem',
+  '@media (max-width: 660px)': {
+    fontSize: '3rem',
+  },
+}));
 const FinalizeButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.custom.green,
   color: theme.palette.custom.textWhite,
@@ -86,7 +100,6 @@ const FinalizeButton = styled(Button)(({ theme }) => ({
   height: '100%',
   borderRadius: '0rem',
 }));
-
 const DeleteButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.custom.red,
   color: theme.palette.custom.textWhite,
@@ -98,8 +111,12 @@ const DeleteButton = styled(Button)(({ theme }) => ({
 }));
 
 const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
-  const router = useRouter();
+  // The request status can be : pending, deleted or finalized
 
+  // Many same thing checks in every handler such as getting accounts everytime. This may looks against DRY but because of metamask extension account changebility, this is must.
+  // not: with metamask mask user can change account and page not render, it causes security issues.
+
+  const router = useRouter();
   // Cards
   const [feedbackCardWaitingOpen, setFeedbackWaitingCardOpen] = useState(false);
   const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
@@ -136,6 +153,15 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
       return;
     }
 
+    // isDelete or isFinalized Check
+    if (request.status !== 'pending') {
+      setFeedbackCardErrorText(
+        "You can't vote an inactive request. This campaign was deleted or finalized."
+      );
+      setFeedbackErrorCardOpen(true);
+      return;
+    }
+
     setFeedbackWaitingCardOpen(true);
     try {
       const campaign = Campaign(address);
@@ -160,7 +186,6 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
 
     // approval threshold check
     const isEnoughRate = request.approvalCount > supportersCount / 2;
-    console.log(isEnoughRate);
     const isFinalizable = isEnoughRate && supportersCount != 0;
     if (!isFinalizable) {
       setFeedbackCardErrorText(
@@ -194,6 +219,7 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
       setFeedbackWaitingCardOpen(false);
       setFeedbackHandlerType('finalize process');
       setFeedbackBarSuccessOpen(true);
+      router.replace(`/campaigns/${address}/requests`);
     } catch (err) {
       setFeedbackWaitingCardOpen(false);
       setFeedbackErrorCardOpen(true);
@@ -202,7 +228,39 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
     }
   };
 
-  const deleteHandler = async () => {}
+  const deleteHandler = async () => {
+    const accounts = await web3.eth.getAccounts();
+
+    // isManager check
+    if (!isManager) {
+      setFeedbackCardErrorText('Only the manager can delete this request.');
+      setFeedbackErrorCardOpen(true);
+      return;
+    }
+
+    // double delete check
+    if (request.status === 'deleted') {
+      setFeedbackCardErrorText('This request is already deleted.');
+      setFeedbackErrorCardOpen(true);
+      return;
+    }
+
+    setFeedbackWaitingCardOpen(true);
+    try {
+      const campaign = Campaign(address);
+      await campaign.methods.deleteRequest(id).send({
+        from: accounts[0],
+      });
+
+      setFeedbackWaitingCardOpen(false);
+      setFeedbackBarSuccessOpen(true);
+      router.replace(`/campaigns/${address}/requests`);
+    } catch (err) {
+      setFeedbackWaitingCardOpen(false);
+      setFeedbackErrorCardOpen(true);
+      setFeedbackCardErrorText(err.message);
+    }
+  };
 
   // Showing error bar after error card closed.
   useEffect(() => {
@@ -214,8 +272,21 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
   return (
     <>
       <MainGrid>
-        <RequestFinalized>Finalized</RequestFinalized>
-        <GridItemsContainer sx={{ opacity: request.complete ? '0.3' : 1 }}>
+        {request.status === 'finalized' ? (
+          <RequestFinalized>Finalized</RequestFinalized>
+        ) : (
+          ''
+        )}
+        {request.status === 'deleted' ? (
+          <RequestDeleted>Deleted</RequestDeleted>
+        ) : (
+          ''
+        )}
+        <GridItemsContainer
+          sx={{
+            opacity: request.status === 'pending' ? 1 : 0.2,
+          }}
+        >
           <GridItem>
             <SubHeadline align="left">ID</SubHeadline>
             <Description align="right">{id}</Description>
@@ -235,7 +306,7 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
 
           <GridItem>
             <SubHeadline align="left">Recipient</SubHeadline>
-            <Description align="right">{request.recipient}</Description>
+            <Description align="right">{request.recipient.substr(0,7)}...</Description>
           </GridItem>
 
           <GridItem>
@@ -246,14 +317,27 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
           </GridItem>
         </GridItemsContainer>
 
-        <GridButtons sx={{ opacity: request.complete ? '0.3' : 1 }}>
-          <ApproveButton disabled={request.complete} onClick={approveHandler}>
+        <GridButtons
+          sx={{
+            opacity: request.status === 'pending' ? 1 : 0.2,
+          }}
+        >
+          <ApproveButton
+            disabled={request.status !== 'pending'}
+            onClick={approveHandler}
+          >
             Approve
           </ApproveButton>
-          <FinalizeButton disabled={request.complete} onClick={finalizeHandler}>
+          <FinalizeButton
+            disabled={request.status !== 'pending'}
+            onClick={finalizeHandler}
+          >
             Finalize
           </FinalizeButton>
-          <DeleteButton disabled={request.complete} onClick={deleteHandler}>
+          <DeleteButton
+            disabled={request.status !== 'pending'}
+            onClick={deleteHandler}
+          >
             Delete
           </DeleteButton>
         </GridButtons>

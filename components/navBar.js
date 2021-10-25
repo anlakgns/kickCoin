@@ -38,7 +38,7 @@ const NavBar = () => {
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const drawerToggler = () => {
+  const drawerOpener = () => {
     setDrawerOpen(true);
   };
 
@@ -53,7 +53,7 @@ const NavBar = () => {
         >
           Kick Coin
         </HeadlineButton>
-        <IconButton onClick={drawerToggler}>
+        <IconButton onClick={drawerOpener}>
           <StyledMenuIcon />
         </IconButton>
       </MainGrid>

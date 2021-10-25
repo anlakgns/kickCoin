@@ -10,7 +10,7 @@ import FeedbackBar from './feedbackBar';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   height: 'auto',
-  padding: '2rem',
+  padding: '1.5rem',
   flex: 1,
   minWidth: '30rem',
   backgroundColor: theme.palette.custom.blueDark,
