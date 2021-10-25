@@ -46,6 +46,7 @@ contract Campaign {
     string public imageURL;
     uint public financialAim;
     uint public minimumContribution;
+    uint public requestsBalance;
     mapping(address => bool) public supporters;
     address payable[] public  supportersAddresses;
     mapping(address => uint) public supporterContributionValues;
@@ -71,13 +72,13 @@ contract Campaign {
     }
     
     modifier restricted() {
-        require(msg.sender == manager);
+        require(msg.sender == manager, "Only manager can take this action.");
         _;
     }
     
     function contribute() public payable {
-        require(msg.value > minimumContribution);
-        require(supporters[msg.sender] == false);
+        require(msg.value > minimumContribution, "You should contribute more than minimum amount.");
+        require(supporters[msg.sender] == false, "You are already contributed to this campaing.");
         supporters[msg.sender] = true;
         supportersCount++;
         supporterContributionValues[msg.sender] = msg.value;
@@ -94,8 +95,9 @@ contract Campaign {
     
     function createRequest(string memory description, uint value, address payable recipient)
     public  restricted {
-        require(value <= financialAim );
+        require(requestsBalance + value <= address(this).balance, "You can't request ether more than your balance." );
 
+        requestsBalance = requestsBalance + value;
         Request storage r = requests[numRequests++];
         r.description = description;
         r.value = value;
@@ -108,8 +110,8 @@ contract Campaign {
     function approveRequest(uint index) public {
         Request storage request = requests[index];
         
-        require(supporters[msg.sender]);
-        require(!request.approvals[msg.sender]);
+        require(supporters[msg.sender], "You should be a contributor of this campaign to vote for a request.");
+        require(!request.approvals[msg.sender], "You can vote only once.");
         
         request.approvals[msg.sender] = true;
         request.approvalCount++;
@@ -124,15 +126,15 @@ contract Campaign {
     
     function finalizeRequest(uint index) public restricted {
         Request storage request = requests[index];
-        require(request.approvalCount > (supportersCount/2));
-        require(!request.complete);
+        require(request.approvalCount > (supportersCount/2), "Not enough approval ratio.");
+        require(!request.complete, "The request is already finalized.");
         
         request.recipient.transfer(request.value);
         request.complete = true;
     } 
 
     function getSummary() public view returns (
-      uint, uint, uint, uint, address,  string memory,  string memory, uint, string memory
+      uint, uint, uint, uint, address,  string memory,  string memory, uint, string memory, uint
       ) {
         return (
           minimumContribution,
@@ -143,7 +145,8 @@ contract Campaign {
           projectName,
           projectAim,
           financialAim,
-          imageURL
+          imageURL,
+          requestsBalance
         );
     }
     
