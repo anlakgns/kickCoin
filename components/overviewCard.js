@@ -5,21 +5,23 @@ import Typography from '@mui/material/Typography';
 import { useRouter } from 'next/router';
 import web3 from '../ethereum/web3';
 import factory from '../ethereum/factory';
-import Campaign from '../ethereum/campaign';
 import FeedbackCard from './feedbackCard';
 import FeedbackBar from './feedbackBar';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
-  height: '10rem',
-  width: '30rem',
+  height: 'auto',
+  padding: '2rem',
+  flex: 1,
+  minWidth: '30rem',
   backgroundColor: theme.palette.custom.blueDark,
-
   borderRadius: '1rem',
   overflow: 'hidden',
-  padding: '0rem 1rem',
   display: 'flex',
   justifyContent: 'center',
   flexDirection: 'column',
+  "@media (max-width: 550px)": {
+    minWidth: '25rem',
+  }
 }));
 
 const SubHeadline = styled(Typography)(({ theme }) => ({
@@ -28,6 +30,7 @@ const SubHeadline = styled(Typography)(({ theme }) => ({
   padding: '0rem 1rem',
   paddingBottom: '0.3rem',
   width: '100%',
+  overflowWrap: "anywhere"
 }));
 
 const Description = styled(Typography)(({ theme }) => ({
@@ -48,7 +51,7 @@ const OverviewCard = ({ info, explanation }) => {
   const router = useRouter();
   const address = router.query.campaignAddress;
 
-  // Cards
+  // Feedback Card States
   const [feedbackCardDeletingProcessOpen, setFeedbackCardDeletingProcessOpen] =
     useState(false);
   const [feedbackCardQuestionOpen, setFeedbackQuestionCardOpen] =
@@ -56,9 +59,10 @@ const OverviewCard = ({ info, explanation }) => {
   const [feedbackCardErrorOpen, setFeedbackCardErrorOpen] = useState(false);
   const [feedbackCardErrorText, setFeedbackCardErrorText] = useState('');
 
-  // Bars
+  // Feedbackar States
   const [feedbackBarSuccessOpen, setFeedbackBarSuccessOpen] = useState(false);
   const [feedbackBarErrorOpen, setFeedbackBarErrorOpen] = useState(false);
+
   const deleteCampaignCardHandler = () => {
     setFeedbackQuestionCardOpen(true);
   };
@@ -99,7 +103,7 @@ const OverviewCard = ({ info, explanation }) => {
 
   return (
     <MainGrid item>
-      <SubHeadline noWrap={true}>
+      <SubHeadline >
         {info[0]}: {info[1]}
       </SubHeadline>
       <Description align="left" variant="subtitle2">

@@ -9,6 +9,9 @@ import web3 from '../ethereum/web3';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
+  "@media (max-width: 1000px)": {
+    padding: "1rem 3rem"
+  }
 }));
 
 const Headline = styled(Typography)(({ theme }) => ({
@@ -28,7 +31,6 @@ const Divider = styled('div')(({ theme }) => ({
 }));
 
 const Home = ({ summaryList }) => {
- 
   return (
     <MainGrid>
       <Headline variant="h5">Open Campaigns</Headline>
@@ -42,6 +44,7 @@ export default Home;
 
 // Server Side
 export async function getStaticProps() {
+  
   const campaignslist = await factory.methods.getDeployedCampaigns().call();
   const summariesArray = await Promise.all(
     Array(parseInt(campaignslist.length))
@@ -50,6 +53,7 @@ export async function getStaticProps() {
         return Campaign(campaignslist[index]).methods.getSummary().call();
       })
   );
+
   return {
     props: {
       summaryList: summariesArray.map((campaignSummary, index) => {

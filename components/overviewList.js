@@ -5,6 +5,9 @@ import OverviewCard from './overviewCard';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   gap: '2rem',
+  display:"flex",
+  flexDirection: "row",
+  flexWrap: "wrap",
 }));
 
 const OverviewList = ({ cardsInfo }) => {
@@ -18,35 +21,17 @@ const OverviewList = ({ cardsInfo }) => {
   ];
 
   return (
-    <MainGrid item container direction="column">
-      <Grid item container direction="row" justifyContent="space-between">
-        {cardsInfo &&
-          Object.entries(cardsInfo)
-            .slice(0, 3)
-            .map((item, i) => {
-              return (
-                <OverviewCard
-                  key={item[0]}
-                  info={item}
-                  explanation={explanations[i]}
-                />
-              );
-            })}
-      </Grid>
-      <Grid item container direction="row" justifyContent="space-between">
-        {cardsInfo &&
-          Object.entries(cardsInfo)
-            .slice(3, 6)
-            .map((item, i) => {
-              return (
-                <OverviewCard
-                  key={item[0]}
-                  info={item}
-                  explanation={explanations[i + 3]}
-                />
-              );
-            })}
-      </Grid>
+    <MainGrid>
+      {cardsInfo &&
+        Object.entries(cardsInfo).map((item, i) => {
+          return (
+            <OverviewCard
+              key={item[0]}
+              info={item}
+              explanation={explanations[i]}
+            />
+          );
+        })}
     </MainGrid>
   );
 };

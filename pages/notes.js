@@ -4,6 +4,13 @@ import NoteBox from '../components/noteBox.js'
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
+  "@media (min-width: 0px) and (max-width: 800px)": {
+    padding: "1rem 3rem"
+  },
+  '@media (min-width: 800px) and (max-width: 1000px)': {
+    marginBottom: '5rem',
+    padding: "0rem 3rem",
+  },
 }));
 
 const Headline = styled(Typography)(({ theme }) => ({

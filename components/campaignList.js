@@ -22,6 +22,10 @@ const PaginationGrid = styled(Grid)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'center',
   padding: '1rem',
+  "@media (max-width: 1000px)": {
+    marginBottom: "5rem",
+    marginTop: "2rem",
+  }
 }));
 
 const StyledPagination = styled(Pagination)(({ theme }) => ({
@@ -54,7 +58,7 @@ const CampaignList = ({ summaryList }) => {
       {summaryListPaged.map((campaingInfo) => {
         return (
           <CampaignCard
-            key={campaingInfo.projectName}
+            key={campaingInfo.address}
             campaingInfo={campaingInfo}
           />
         );

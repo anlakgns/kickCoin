@@ -9,6 +9,9 @@ import OverviewList from '../../../components/overviewList';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
+  '@media (max-width: 1000px)': {
+    marginBottom: '5rem',
+  },
 }));
 
 const Headline = styled(Typography)(({ theme }) => ({
@@ -80,7 +83,10 @@ export default CampaignOverview;
 export async function getStaticProps(context) {
   const { params } = context;
   const address = params.campaignAddress;
-  const summary = await Campaign(address).methods.getSummary().call();
+  const campaign = Campaign(address);
+
+  const summary = await campaign.methods.getSummary().call();
+
   return {
     props: {
       cardsInfo: {

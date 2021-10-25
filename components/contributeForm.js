@@ -26,6 +26,24 @@ const InnerFormGrid = styled(Grid)(({ theme }) => ({
   borderRadius: '1rem',
   overflow: 'hidden',
   padding: '1rem 3rem',
+
+  display: 'flex',
+  gap: '1rem',
+  '@media (max-width: 600px)': {
+    flexDirection: 'column',
+  },
+}));
+
+const InputGrid = styled(Grid)(({ theme }) => ({
+  flex: 10,
+  '@media (max-width: 600px)': {
+    flex: 1,
+    flexGrow: 1,
+  },
+}));
+
+const ButtonGrid = styled(Grid)(({ theme }) => ({
+  flex: 1,
 }));
 
 const ContributeButton = styled(Button)(({ theme }) => ({
@@ -33,15 +51,21 @@ const ContributeButton = styled(Button)(({ theme }) => ({
   color: theme.palette.custom.textWhite,
   fontWeight: 'bold',
   margin: '1rem',
-  width: '15rem',
+  width: '100%',
   height: '5rem',
+  padding: 0,
+  '@media (max-width: 600px)': {
+    margin: '0rem',
+    height: "3rem",
+    marginBottom: "2rem"
+  },
 }));
 
 const ContributeForm = ({ minContribution }) => {
   const [spinner, setSpinner] = useState(false);
   const router = useRouter();
   const address = router.query.campaignAddress;
-  console.log(minContribution)
+
   // Cards
   const [feedbackCardWaitingOpen, setFeedbackWaitingCardOpen] = useState(false);
   const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
@@ -65,12 +89,24 @@ const ContributeForm = ({ minContribution }) => {
         .required('Please provide a min contribution amount.'),
     }),
     onSubmit: async (values) => {
+      // isSupporter Check
+      const accounts = await web3.eth.getAccounts();
+      const campaign = await Campaign(address);
+      const isSupporter = await campaign.methods.supporters(accounts[0]).call();
+
+      if (isSupporter) {
+        setFeedbackCardErrorText(
+          "You already contributed this campaign. You can't contribute again for the sake of approval voting system."
+        );
+        setFeedbackErrorCardOpen(true);
+        return;
+      }
+
       setSpinner(true);
       setFeedbackWaitingCardOpen(true);
 
       try {
         const campaign = await Campaign(address);
-        const accounts = await web3.eth.getAccounts();
 
         await campaign.methods.contribute().send({
           from: accounts[0],
@@ -80,8 +116,8 @@ const ContributeForm = ({ minContribution }) => {
         setSpinner(false);
         setFeedbackWaitingCardOpen(false);
         setFeedbackBarSuccessOpen(true);
-        
-        router.replace(`/campaigns/${address}`)
+        formik.values.contribution = '';
+        router.replace(`/campaigns/${address}`);
       } catch (err) {
         setSpinner(false);
         setFeedbackWaitingCardOpen(false);
@@ -101,13 +137,8 @@ const ContributeForm = ({ minContribution }) => {
   return (
     <>
       <form onSubmit={formik.handleSubmit}>
-        <InnerFormGrid
-          container
-          direction="row"
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Grid item xs={9}>
+        <InnerFormGrid>
+          <InputGrid>
             <StyledTextField
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
@@ -127,8 +158,8 @@ const ContributeForm = ({ minContribution }) => {
               inputProps={{ style: { color: 'white' } }}
               InputLabelProps={{ sx: { color: '#05AAE0' } }}
             />
-          </Grid>
-          <Grid item container justifyContent="flex-end" xs={3}>
+          </InputGrid>
+          <ButtonGrid>
             <ContributeButton
               type="submit"
               disabled={spinner}
@@ -137,7 +168,7 @@ const ContributeForm = ({ minContribution }) => {
             >
               {spinner ? <CircularProgress color="secondary" /> : 'Contribute!'}
             </ContributeButton>
-          </Grid>
+          </ButtonGrid>
         </InnerFormGrid>
       </form>
       <FeedbackCard

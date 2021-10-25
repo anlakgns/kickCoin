@@ -10,13 +10,34 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '1rem 1rem',
-  marginTop: '4rem',
+  paddingTop: "4rem",
+  display: 'flex',
+  height: '100%',
+  gap: '3rem',
+  flexDirection: 'column',
   '@media (max-width: 1000px)': {
     maxWidth: '20rem',
     backgroundColor: theme.palette.custom.blueDark,
     height: '100vh',
     marginTop: '0rem',
+    paddingTop: '2rem',
   },
+}));
+
+const LogoGrid = styled(Grid)(({ theme }) => ({
+  flex: 1,
+  flexGrow: 1,
+}));
+
+const MenuGrid = styled(Grid)(({ theme }) => ({
+  flex: 1,
+  flexGrow: 1,
+  width: '100%',
+}));
+
+const AboutGrid = styled(Grid)(({ theme }) => ({
+  flexGrow: 1,
+  flex: 2,
 }));
 
 const HeadlineButton = styled(Button)(({ theme }) => ({
@@ -96,23 +117,6 @@ const DividerWarning = styled('div')(({ theme }) => ({
   borderRadius: '0.15rem',
   marginBottom: '0.5rem',
   opacity: 0.7,
-}));
-
-const LogoGrid = styled(Grid)(({ theme }) => ({}));
-
-const MenuGrid = styled(Grid)(({ theme }) => ({
-  marginTop: '3rem',
-  width: '100%',
-  '@media (max-width: 1000px)': {
-    marginTop: '0rem',
-  },
-}));
-
-const AboutGrid = styled(Grid)(({ theme }) => ({
-  marginTop: '3rem',
-  '@media (max-width: 1000px)': {
-    marginTop: '0rem',
-  },
 }));
 
 const WarningSpan = styled('span')(({ theme }) => ({
@@ -225,8 +229,8 @@ const Sidebar = ({ setDrawerOpen }) => {
   };
 
   return (
-    <MainGrid container direciton="column" >
-      <LogoGrid item>
+    <MainGrid container direciton="column">
+      <LogoGrid>
         <HeadlineButton
           variation="text"
           size="large"
@@ -242,7 +246,7 @@ const Sidebar = ({ setDrawerOpen }) => {
         </Description>
       </LogoGrid>
 
-      <MenuGrid item>
+      <MenuGrid>
         <Headline align="left" variant="subtitle1">
           Menu{' '}
         </Headline>
@@ -254,7 +258,11 @@ const Sidebar = ({ setDrawerOpen }) => {
           onChange={handleChange}
           textColor="secondary"
         >
-          <StyledTab label="Campaigns List" value={0} />
+          <StyledTab
+            label="Campaigns List"
+            value={0}
+            onClick={() => router.push('/')}
+          />
           <StyledTab label="Create a Campaign" value={1} />
           <StyledTab label="Notes" value={2} />
         </StyledTabs>

@@ -39,7 +39,7 @@ const NavBar = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const drawerToggler = () => {
-    setDrawerOpen(!drawerOpen);
+    setDrawerOpen(true);
   };
 
   return (

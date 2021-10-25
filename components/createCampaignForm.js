@@ -19,6 +19,13 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   borderRadius: '1rem',
   overflow: 'hidden',
   padding: '2rem 5rem',
+  "@media (min-width: 0px) and (max-width: 700px)": {
+    padding: "2rem 2rem"
+  },
+  '@media (min-width: 700px) and (max-width: 1000px)': {
+    marginBottom: '5rem',
+    padding: "2rem 3rem",
+  },
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -35,6 +42,10 @@ const CreateButton = styled(Button)(({ theme }) => ({
   marginTop: '2rem',
   margin: 'auto',
   width: '20rem',
+  "@media (max-width: 1000px)": {
+    marginBottom: "2rem",
+    marginTop: "3rem"
+  }
 }));
 
 const SubHeadline = styled(Typography)(({ theme }) => ({

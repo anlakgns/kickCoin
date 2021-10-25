@@ -9,8 +9,10 @@ import FeedbackCard from './feedbackCard';
 import FeedbackBar from './feedbackBar';
 import { useRouter } from 'next/router';
 
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  color: theme.palette.custom.textWhite,
+const MainGrid = styled(Grid)(({ theme }) => ({
+  backgroundImage: `linear-gradient(to bottom, ${theme.palette.custom.gradient1}, ${theme.palette.custom.gradient2})`,
+  borderRadius: '1rem',
+  minHeight: '12rem',
 }));
 
 const FinalizeApproveButton = styled(Button)(({ theme }) => ({
@@ -83,7 +85,7 @@ const RequestRow = ({ request, id, address, supportersCount, isManager }) => {
 
     // approval threshold check
     const isEnoughRate = request.approvalCount > supportersCount / 2;
-    console.log(isEnoughRate)
+    console.log(isEnoughRate);
     const isFinalizable = isEnoughRate && supportersCount != 0;
     if (!isFinalizable) {
       setFeedbackCardErrorText(
@@ -127,27 +129,9 @@ const RequestRow = ({ request, id, address, supportersCount, isManager }) => {
 
   return (
     <>
-      <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-        <StyledTableCell component="th" scope="row">
-          {id}
-        </StyledTableCell>
-        <StyledTableCell align="right">{request.description}</StyledTableCell>
-        <StyledTableCell align="right">
-          {web3.utils.fromWei(request.value, 'ether')}
-        </StyledTableCell>
-        <StyledTableCell align="right">{request.recipient}</StyledTableCell>
-        <StyledTableCell align="right">
-          {request.approvalCount}/{supportersCount}
-        </StyledTableCell>
-        <StyledTableCell>
-          <FinalizeApproveButton onClick={approveHandler}>
-            Approve
-          </FinalizeApproveButton>
-        </StyledTableCell>
-        <StyledTableCell onClick={finalizeHandler}>
-          <FinalizeApproveButton>Finalize</FinalizeApproveButton>
-        </StyledTableCell>
-      </TableRow>
+      <MainGrid>
+        
+      </MainGrid>
       <FeedbackCard
         type="waiting"
         open={feedbackCardWaitingOpen}

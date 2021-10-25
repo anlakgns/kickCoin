@@ -1,9 +1,18 @@
 import { Typography, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import CreateCampaignForm from '../../components/createCampaignForm'
+import CreateCampaignForm from '../../components/createCampaignForm';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
+
+  '@media (min-width: 0px) and (max-width: 700px)': {
+    marginBottom: '5rem',
+    padding: "0rem 3rem",
+  },
+  '@media (min-width: 700px) and (max-width: 1000px)': {
+    marginBottom: '5rem',
+    padding: "0rem 3rem",
+  },
 }));
 
 const Headline = styled(Typography)(({ theme }) => ({
@@ -27,7 +36,7 @@ const CampaignNew = () => {
     <MainGrid container direction="column">
       <Headline variant="h5">Create a Campaign</Headline>
       <Divider />
-      <CreateCampaignForm/>
+      <CreateCampaignForm />
     </MainGrid>
   );
 };

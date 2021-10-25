@@ -13,7 +13,7 @@ import Box from '@mui/material/Box';
 const MainGrid = styled(Grid)(({ theme }) => ({
   minHeight: '12rem',
   overflow: 'hidden',
-  gap:"1rem",
+  gap: '1rem',
   backgroundImage: `linear-gradient(to bottom, ${theme.palette.custom.gradient1}, ${theme.palette.custom.gradient2})`,
   borderRadius: '1rem',
   gap: '1rem',
@@ -23,14 +23,14 @@ const MainGrid = styled(Grid)(({ theme }) => ({
     gap: '1rem',
     minWidth: '27.5rem',
   },
-  '@media (min-width: 600px) and (max-width: 1000px)': {
+  '@media (min-width: 601px) and (max-width: 1000px)': {
     height: 'auto',
     display: 'flex',
     gap: '1rem',
     minWidth: '25rem',
     flex: 1,
   },
-  '@media (min-width: 1000px)': {
+  '@media (min-width: 1001px)': {
     maxHeight: '18rem',
     display: 'flex',
     gap: '1rem',
@@ -53,7 +53,7 @@ const ImageDiv = styled('div')(({ theme }) => ({
 const TextContentGrid = styled(Grid)(({ theme }) => ({
   padding: '1rem',
   '@media (min-width: 1000px)': {
-    flex:3
+    flex: 3,
   },
 }));
 const FundedGrid = styled(Grid)(({ theme }) => ({
@@ -62,17 +62,17 @@ const FundedGrid = styled(Grid)(({ theme }) => ({
   flexDirection: 'column',
   justifyContent: 'center',
   '@media (min-width: 1000px)': {
-    flex:1,
-    maxHeight:"18rem"
+    flex: 1,
+    maxHeight: '18rem',
   },
-  '@media (min-width: 1000px) and (max-width: 1100px)': {
-    marginRight:"1rem"
+  '@media (min-width: 1001px) and (max-width: 1100px)': {
+    marginRight: '1rem',
   },
 }));
 
 const ButtonGrid = styled(Grid)(({ theme }) => ({
-  '@media (min-width: 1000px)': {
-    flex:1
+  '@media (min-width: 1001px)': {
+    flex: 1,
   },
 }));
 
@@ -122,9 +122,9 @@ const ViewButton = styled(Button)(({ theme }) => ({
     borderRadiusBottom: '1rem',
     borderRadiusTop: '0rem',
   },
-  '@media (min-width: 1000px)': {
+  '@media (min-width: 1001px)': {
     width: '100%',
-    maxHeight:"18rem",
+    maxHeight: '18rem',
     height: '100%',
     borderRadius: '0rem',
     borderRadiusBottom: '1rem',
@@ -192,7 +192,12 @@ const CampaignCard = ({ campaingInfo, preview }) => {
         <LinearProgressGrid>
           <StyledLinearProgressBox>
             <FundedTextMobile variant="body2" align="left">
-              %{(campaingInfo.balance / campaingInfo.financialAim) * 100} funded
+              %
+              {(
+                (campaingInfo.balance / campaingInfo.financialAim) *
+                100
+              ).toFixed(3)}{' '}
+              funded
             </FundedTextMobile>
             <StyledLinearProgress
               variant="determinate"
@@ -201,7 +206,7 @@ const CampaignCard = ({ campaingInfo, preview }) => {
           </StyledLinearProgressBox>
         </LinearProgressGrid>
       ) : (
-        <FundedGrid >
+        <FundedGrid>
           <Circle />
           <Percentage variant="h6" align="center">
             % {(campaingInfo.balance / campaingInfo.financialAim) * 100}
@@ -211,7 +216,7 @@ const CampaignCard = ({ campaingInfo, preview }) => {
       )}
 
       {/* Button Part */}
-      <ButtonGrid >
+      <ButtonGrid>
         <ViewButton
           onClick={() =>
             preview === 'true'

@@ -77,6 +77,7 @@ contract Campaign {
     
     function contribute() public payable {
         require(msg.value > minimumContribution);
+        require(supporters[msg.sender] == false);
         supporters[msg.sender] = true;
         supportersCount++;
         supporterContributionValues[msg.sender] = msg.value;
@@ -93,6 +94,8 @@ contract Campaign {
     
     function createRequest(string memory description, uint value, address payable recipient)
     public  restricted {
+        require(value <= financialAim );
+
         Request storage r = requests[numRequests++];
         r.description = description;
         r.value = value;
@@ -112,6 +115,12 @@ contract Campaign {
         request.approvalCount++;
         
     }
+    
+    function isApproved(address account, uint index) public view returns(bool) {
+        Request storage request = requests[index];
+        return request.approvals[account];
+    }
+    
     
     function finalizeRequest(uint index) public restricted {
         Request storage request = requests[index];
