@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import CampaignList from '../components/campaignList';
 import Campaign from '../ethereum/campaign';
 import web3 from '../ethereum/web3';
-import Headline from '../components/sharedUI/Headline'
+import Headline from '../components/sharedUI/Headline';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
@@ -17,7 +17,7 @@ const MainGrid = styled(Grid)(({ theme }) => ({
 const Home = ({ summaryList }) => {
   return (
     <MainGrid>
-      <Headline headlineText="Open Campaigns"/>
+      <Headline headlineText="Open Campaigns" />
       <CampaignList summaryList={summaryList} />
     </MainGrid>
   );

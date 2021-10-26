@@ -1,17 +1,17 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 import { Button, Grid, Typography } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
-import { useState } from 'react';
 import factory from '../ethereum/factory';
 import web3 from '../ethereum/web3';
 import CircularProgress from '@mui/material/CircularProgress';
 import CampaignCard from './campaignCard';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Feedback from './feedback';
+import Feedback from './sharedUI/feedback';
+import useFormState from './sharedHooks/formStateHook';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
@@ -55,17 +55,8 @@ const SubHeadline = styled(Typography)(({ theme }) => ({
 }));
 
 const CreateCampaignForm = ({ deployedCampaignsList }) => {
-  const [spinner, setSpinner] = useState(false);
   const router = useRouter();
-
-  // Cards
-  const [feedbackCardWaitingOpen, setFeedbackWaitingCardOpen] = useState(false);
-  const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
-  const [feedbackCardErrorText, setFeedbackCardErrorText] = useState('');
-
-  // Bars
-  const [feedbackBarSuccessOpen, setFeedbackBarSuccessOpen] = useState(false);
-  const [feedbackBarErrorOpen, setFeedbackBarErrorOpen] = useState(false);
+  const [feedbackState, dispatch, ACTIONS] = useFormState();
 
   const formik = useFormik({
     initialValues: {
@@ -88,8 +79,9 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
       imageURL: Yup.string().url('Please insert an URL').trim(),
     }),
     onSubmit: async (values) => {
-      setSpinner(true);
-      setFeedbackWaitingCardOpen(true);
+      // start progress
+      dispatch({ type: ACTIONS.START_PROCESS });
+
       try {
         const accounts = await web3.eth.getAccounts();
 
@@ -105,27 +97,19 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
           .send({
             from: accounts[0],
           });
-        setSpinner(false);
-        setFeedbackWaitingCardOpen(false);
-        setFeedbackBarSuccessOpen(true);
+
+        dispatch({ type: ACTIONS.SUCCESS });
         setTimeout(() => {
           router.push('/');
         }, [1500]);
       } catch (err) {
-        setSpinner(false);
-        setFeedbackWaitingCardOpen(false);
-        setFeedbackErrorCardOpen(true);
-        setFeedbackCardErrorText(err.message);
+        dispatch({
+          type: ACTIONS.ERROR,
+          payload: err.message,
+        });
       }
     },
   });
-
-  // Showing error bar after error card closed.
-  useEffect(() => {
-    if (Boolean(feedbackCardErrorText) && !feedbackCardErrorOpen) {
-      setFeedbackBarErrorOpen(true);
-    }
-  }, [feedbackCardErrorText, feedbackCardErrorOpen]);
 
   const campaignInfo = {
     minContribution: formik.values.minContribution,
@@ -247,29 +231,35 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
           <CreateButton
             type="submit"
             variant="contained"
-            disabled={spinner}
-            endIcon={spinner ? '' : <AddIcon />}
+            disabled={feedbackState.spinner}
+            endIcon={feedbackState.spinner ? '' : <AddIcon />}
           >
-            {spinner ? <CircularProgress color="primary" /> : 'Create!'}
+            {feedbackState.spinner ? (
+              <CircularProgress color="primary" />
+            ) : (
+              'Create!'
+            )}
           </CreateButton>
         </Grid>
       </form>
 
       <Feedback
         cardType="waiting"
-        cardOpen={feedbackCardWaitingOpen}
+        cardOpen={feedbackState.cardWaiting}
         barType="success"
-        barOpen={feedbackBarSuccessOpen}
-        setBarOpen={setFeedbackBarSuccessOpen}
+        barOpen={feedbackState.barSuccess}
+        setBarOpen={() => dispatch({ type: ACTIONS.BAR_SUCCESS_OPEN })}
+        setBarClose={() => dispatch({ type: ACTIONS.BAR_SUCCESS_CLOSE })}
         barContentText="Your campaign has created successfully."
       />
       <Feedback
         cardType="error"
-        cardOpen={feedbackCardErrorOpen}
-        setCardOpen={setFeedbackErrorCardOpen}
-        cardContentText={feedbackCardErrorText}
-        barOpen={feedbackBarErrorOpen}
-        setBarOpen={setFeedbackBarErrorOpen}
+        cardOpen={feedbackState.cardError}
+        setCardClose={() => dispatch({ type: ACTIONS.CARD_ERROR_CLOSE })}
+        cardContentText={feedbackState.cardErrorText}
+        barOpen={feedbackState.barError}
+        setBarClose={() => dispatch({ type: ACTIONS.BAR_ERROR_CLOSE })}
+        setBarOpen={() => dispatch({ type: ACTIONS.BAR_ERROR_OPEN })}
         barContentText="Your campaign has not created."
         barType="error"
       />

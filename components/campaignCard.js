@@ -13,6 +13,7 @@ import Box from '@mui/material/Box';
 const MainGrid = styled(Grid)(({ theme }) => ({
   minHeight: '12rem',
   overflow: 'hidden',
+  zIndex: 2000,
   gap: '1rem',
   backgroundImage: `linear-gradient(to bottom, ${theme.palette.custom.gradient1}, ${theme.palette.custom.gradient2})`,
   borderRadius: '1rem',
@@ -185,12 +186,16 @@ const CampaignCard = ({ campaingInfo, preview }) => {
               {(
                 (campaingInfo.balance / campaingInfo.financialAim) *
                 100
-              ).toFixed(3)}{' '}
+              ).toFixed(0)}{' '}
               funded
             </FundedTextMobile>
             <StyledLinearProgress
               variant="determinate"
-              value={(campaingInfo.balance / campaingInfo.financialAim) * 100}
+              value={
+                (campaingInfo.balance / campaingInfo.financialAim) * 100 > 100
+                  ? 100
+                  : (campaingInfo.balance / campaingInfo.financialAim) * 100
+              }
             />
           </StyledLinearProgressBox>
         </LinearProgressGrid>
@@ -198,7 +203,10 @@ const CampaignCard = ({ campaingInfo, preview }) => {
         <FundedGrid>
           <Circle />
           <Percentage variant="h6" align="center">
-            % {(campaingInfo.balance / campaingInfo.financialAim) * 100}
+            %{' '}
+            {((campaingInfo.balance / campaingInfo.financialAim) * 100).toFixed(
+              0
+            )}
           </Percentage>
           <FundedText align="center">funded</FundedText>
         </FundedGrid>
@@ -216,7 +224,6 @@ const CampaignCard = ({ campaingInfo, preview }) => {
           View Campaign
         </ViewButton>
       </ButtonGrid>
-   
     </MainGrid>
   );
 };

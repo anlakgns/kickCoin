@@ -37,7 +37,7 @@ const CampaignOverview = ({ cardsInfo, additionalInfo }) => {
   return (
     <MainGrid>
       <Headline
-        headlineText={`${additionalInfo?.projectName} Campaign Overview`}
+        headlineText={`${additionalInfo?.projectName} - Overview`}
         backRouter="true"
       />
       <AboutGrid>

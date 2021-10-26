@@ -10,7 +10,6 @@ const MainGrid = styled(Grid)(({ theme }) => ({
 }));
 
 const SubMainGrid = styled(Grid)(({ theme }) => ({
-  maxWidth: '150rem',
   position: 'relative',
   minHeight: '100vh',
   margin: 'auto',

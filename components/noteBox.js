@@ -65,13 +65,20 @@ const StyledPagination = styled(Pagination)(({ theme }) => ({
 }));
 
 const NoteBox = () => {
-  const [page, setPage] = useState(1);
-  const [noteAmountPerPage, setnoteAmountPerPage] = useState(3);
-  const [noteListPaged, setNoteListPages] = useState([]);
+  // const [page, setPage] = useState(1);
+  // const [noteAmountPerPage, setnoteAmountPerPage] = useState(3);
+  // const [noteListPaged, setNoteListPages] = useState([]);
 
-  const paginationHandler = (_, value) => {
-    setPage(value);
-  };
+  // const paginationHandler = (_, value) => {
+  //   setPage(value);
+  // };
+
+    // useEffect(() => {
+  //   setNoteListPages(
+  //     noteArray.slice((page - 1) * noteAmountPerPage, noteAmountPerPage * page)
+  //   );
+  // }, [page]);
+
 
   const noteArray = [
     {
@@ -100,16 +107,11 @@ const NoteBox = () => {
     },
   ];
 
-  useEffect(() => {
-    setNoteListPages(
-      noteArray.slice((page - 1) * noteAmountPerPage, noteAmountPerPage * page)
-    );
-  }, [page]);
 
   return (
     <MainGrid>
       <Headline variant="h6">Important Notes Before Use Our Website</Headline>
-      {noteListPaged.map((note) => {
+      {noteArray.map((note) => {
         return (
           <Fragment key={note.id}>
             <SubHeadline>{note.headline}</SubHeadline>
@@ -118,14 +120,14 @@ const NoteBox = () => {
         );
       })}
 
-      <PaginationGrid>
+      {/* <PaginationGrid>
         <StyledPagination
           count={Math.ceil(noteArray.length / noteAmountPerPage)}
           onChange={paginationHandler}
           page={page}
           color="secondary"
         />
-      </PaginationGrid>
+      </PaginationGrid> */}
     </MainGrid>
   );
 };

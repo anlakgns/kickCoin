@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Button from '@mui/material/Button';
 import web3 from '../ethereum/web3';
 import Campaign from '../ethereum/campaign';
 import { styled } from '@mui/material/styles';
-import FeedbackCard from './feedbackCard';
-import FeedbackBar from './feedbackBar';
 import { useRouter } from 'next/router';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import Feedback from './sharedUI/feedback';
+import useFormState from './sharedHooks/formStateHook';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   height: 'auto',
@@ -59,6 +59,9 @@ const Description = styled(Typography)(({ theme }) => ({
   padding: '0rem 1rem',
   paddingBottom: '0.4rem',
   fontSize: '0.8rem',
+  '@media (max-width: 600px)': {
+    fontSize: '1rem',
+  },
 }));
 const ApproveButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.custom.orange,
@@ -112,19 +115,12 @@ const DeleteButton = styled(Button)(({ theme }) => ({
 
 const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
   // The request status can be : pending, deleted or finalized
+  const [feedbackState, dispatch, ACTIONS] = useFormState();
 
-  // Many same thing checks in every handler such as getting accounts everytime. This may looks against DRY but because of metamask extension account changebility, this is must.
-  // not: with metamask mask user can change account and page not render, it causes security issues.
+  // Many same thing checks in every handler such as getting accounts everytime. This may looks against DRY but because of metamask extension account changebility, this is must. (Some dublication can be reduced by common functions)
+  // not: with metamask mask user can change account and page not render, it causes UX issues.
 
   const router = useRouter();
-  // Cards
-  const [feedbackCardWaitingOpen, setFeedbackWaitingCardOpen] = useState(false);
-  const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
-  const [feedbackCardErrorText, setFeedbackCardErrorText] = useState('');
-
-  // Bars
-  const [feedbackBarSuccessOpen, setFeedbackBarSuccessOpen] = useState(false);
-  const [feedbackBarErrorOpen, setFeedbackBarErrorOpen] = useState(false);
   const [feedbackHandlerType, setFeedbackHandlerType] = useState();
 
   const approveHandler = async () => {
@@ -137,47 +133,51 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
 
     // isSupporter Check
     if (!isSupporter) {
-      setFeedbackCardErrorText(
-        "You are not a supporter of this campaign. You can' vote for this request. Please make a contribution to make this action."
-      );
-      setFeedbackErrorCardOpen(true);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload:
+          "You are not a supporter of this campaign. You can' vote for this request. Please make a contribution to make this action.",
+      });
       return;
     }
 
     // Double approve check
     if (isApproved) {
-      setFeedbackCardErrorText(
-        "You are already approved this request. You can't approve a request more than once."
-      );
-      setFeedbackErrorCardOpen(true);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload:
+          "You are already approved this request. You can't approve a request more than once.",
+      });
       return;
     }
 
     // isDelete or isFinalized Check
     if (request.status !== 'pending') {
-      setFeedbackCardErrorText(
-        "You can't vote an inactive request. This campaign was deleted or finalized."
-      );
-      setFeedbackErrorCardOpen(true);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload:
+          "You can't vote an inactive request. This campaign was deleted or finalized.",
+      });
       return;
     }
 
-    setFeedbackWaitingCardOpen(true);
+    // start progress
+    dispatch({ type: ACTIONS.START_PROCESS });
+    setFeedbackHandlerType('approval process');
+
     try {
       const campaign = Campaign(address);
       await campaign.methods.approveRequest(id).send({
         from: accounts[0],
       });
 
-      setFeedbackWaitingCardOpen(false);
-      setFeedbackHandlerType('approval process');
-      setFeedbackBarSuccessOpen(true);
+      dispatch({ type: ACTIONS.SUCCESS });
       router.replace(`/campaigns/${address}/requests`);
     } catch (err) {
-      setFeedbackWaitingCardOpen(false);
-      setFeedbackErrorCardOpen(true);
-      setFeedbackHandlerType('aproval process');
-      setFeedbackCardErrorText(err.message);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload: err.message,
+      });
     }
   };
 
@@ -188,86 +188,91 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
     const isEnoughRate = request.approvalCount > supportersCount / 2;
     const isFinalizable = isEnoughRate && supportersCount != 0;
     if (!isFinalizable) {
-      setFeedbackCardErrorText(
-        'Not enough approral rate. The campaign needs to have more than 50% approval rate to finalize request.'
-      );
-      setFeedbackErrorCardOpen(true);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload:
+          'Not enough approral rate. The campaign needs to have more than 50% approval rate to finalize request.',
+      });
       return;
     }
 
     // isManager check
     if (!isManager) {
-      setFeedbackCardErrorText('Only the manager can finalize this request.');
-      setFeedbackErrorCardOpen(true);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload: 'Only the manager can finalize this request.',
+      });
       return;
     }
 
     // Already complete check
     if (request.complete) {
-      setFeedbackCardErrorText('This request is already finalized');
-      setFeedbackErrorCardOpen(true);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload: 'This request is already finalized',
+      });
       return;
     }
 
-    setFeedbackWaitingCardOpen(true);
+    // start progress
+    dispatch({ type: ACTIONS.START_PROCESS });
+    setFeedbackHandlerType('finalize process');
     try {
       const campaign = Campaign(address);
       await campaign.methods.finalizeRequest(id).send({
         from: accounts[0],
       });
 
-      setFeedbackWaitingCardOpen(false);
-      setFeedbackHandlerType('finalize process');
-      setFeedbackBarSuccessOpen(true);
+      dispatch({ type: ACTIONS.SUCCESS });
       router.replace(`/campaigns/${address}/requests`);
     } catch (err) {
-      setFeedbackWaitingCardOpen(false);
-      setFeedbackErrorCardOpen(true);
-      setFeedbackHandlerType('finalize process');
-      setFeedbackCardErrorText(err.message);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload: err.message,
+      });
     }
   };
 
   const deleteHandler = async () => {
+    dispatch({ type: ACTIONS.CARD_QUESTION_CLOSE });
     const accounts = await web3.eth.getAccounts();
 
     // isManager check
     if (!isManager) {
-      setFeedbackCardErrorText('Only the manager can delete this request.');
-      setFeedbackErrorCardOpen(true);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload: 'Only the manager can delete this request.',
+      });
       return;
     }
 
     // double delete check
     if (request.status === 'deleted') {
-      setFeedbackCardErrorText('This request is already deleted.');
-      setFeedbackErrorCardOpen(true);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload: 'This request is already deleted.',
+      });
       return;
     }
 
-    setFeedbackWaitingCardOpen(true);
+    // start progress
+    dispatch({ type: ACTIONS.START_PROCESS });
+    setFeedbackHandlerType('deleting process');
     try {
       const campaign = Campaign(address);
       await campaign.methods.deleteRequest(id).send({
         from: accounts[0],
       });
 
-      setFeedbackWaitingCardOpen(false);
-      setFeedbackBarSuccessOpen(true);
+      dispatch({ type: ACTIONS.SUCCESS });
       router.replace(`/campaigns/${address}/requests`);
     } catch (err) {
-      setFeedbackWaitingCardOpen(false);
-      setFeedbackErrorCardOpen(true);
-      setFeedbackCardErrorText(err.message);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload: err.message,
+      });
     }
   };
-
-  // Showing error bar after error card closed.
-  useEffect(() => {
-    if (Boolean(feedbackCardErrorText) && !feedbackCardErrorOpen) {
-      setFeedbackBarErrorOpen(true);
-    }
-  }, [feedbackCardErrorText, feedbackCardErrorOpen]);
 
   return (
     <>
@@ -306,7 +311,9 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
 
           <GridItem>
             <SubHeadline align="left">Recipient</SubHeadline>
-            <Description align="right">{request.recipient.substr(0,7)}...</Description>
+            <Description align="right">
+              {request.recipient.substr(0, 7)}...
+            </Description>
           </GridItem>
 
           <GridItem>
@@ -336,37 +343,37 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
           </FinalizeButton>
           <DeleteButton
             disabled={request.status !== 'pending'}
-            onClick={deleteHandler}
+            onClick={() => dispatch({ type: ACTIONS.CARD_QUESTION_OPEN })}
           >
             Delete
           </DeleteButton>
         </GridButtons>
       </MainGrid>
-      <FeedbackCard
-        type="waiting"
-        open={feedbackCardWaitingOpen}
-        setOpen={setFeedbackWaitingCardOpen}
-        headline="Validation Process"
-        contentText="Every attempt to change in ethereum network needs to validated by miners. This process takes 15-30 seconds in ethereum network. Please be patient and wait we will feedback you when the process is done. "
+
+      <Feedback
+        cardType="waiting"
+        cardOpen={feedbackState.cardWaiting}
+        barOpen={feedbackState.barSuccess}
+        setBarOpen={() => dispatch({ type: ACTIONS.BAR_SUCCESS_OPEN })}
+        setBarClose={() => dispatch({ type: ACTIONS.BAR_SUCCESS_CLOSE })}
+        barContentText={`Your ${feedbackHandlerType} has created successfull`}
+        barType="success"
       />
-      <FeedbackCard
-        type="error"
-        open={feedbackCardErrorOpen}
-        setOpen={setFeedbackErrorCardOpen}
-        headline="Something went wrong"
-        contentText={feedbackCardErrorText}
+
+      <Feedback
+        cardType="question"
+        cardOpen={feedbackState.cardQuestion}
+        cardHeadline="Deleting Process"
+        deletePermanently={deleteHandler}
+        cardContentText="We will payback all balance in this campaing to your supporters and delete this campaign permanently. Are you sure ?"
+        cardCancel={() => dispatch({ type: ACTIONS.CARD_QUESTION_CLOSE })}
       />
-      <FeedbackBar
-        type="success"
-        open={feedbackBarSuccessOpen}
-        setOpen={setFeedbackBarSuccessOpen}
-        contentText={`Your ${feedbackHandlerType} has created successfull`}
-      />
-      <FeedbackBar
-        type="error"
-        open={feedbackBarErrorOpen}
-        setOpen={setFeedbackBarErrorOpen}
-        contentText={`Your ${feedbackHandlerType} has not created`}
+
+      <Feedback
+        cardType="error"
+        cardOpen={feedbackState.cardError}
+        setCardClose={() => dispatch({ type: ACTIONS.CARD_ERROR_CLOSE })}
+        cardContentText={feedbackState.cardErrorText}
       />
     </>
   );

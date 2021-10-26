@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Pagination from '@mui/material/Pagination';
 import Button from '@mui/material/Button';
 import RequestCard from './requestCard';
 import { useRouter } from 'next/router';
 import Campaign from '../ethereum/campaign';
 import web3 from '../ethereum/web3';
-import FeedbackCard from '../components/feedbackCard';
+import Feedback from './sharedUI/feedback';
+import useFormState from './sharedHooks/formStateHook';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   display: 'flex',
@@ -22,7 +22,6 @@ const RequestsGrid = styled(Grid)(({ theme }) => ({
   flexDirection: 'column',
   gap: '0.5rem',
 }));
-
 const AddRequestButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.custom.orange,
   color: theme.palette.custom.textWhite,
@@ -37,10 +36,9 @@ const AddRequestButton = styled(Button)(({ theme }) => ({
 const RequestList = ({ props }) => {
   const router = useRouter();
   const address = router.query.campaignAddress;
+  const [feedbackState, dispatch, ACTIONS] = useFormState();
 
   const [isManager, setIsManager] = useState(false);
-  const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
-  const [feedbackCardErrorText, setFeedbackCardErrorText] = useState('');
 
   useEffect(() => {
     const check = async () => {
@@ -59,10 +57,10 @@ const RequestList = ({ props }) => {
   const addRequestHandler = () => {
     // isManager check
     if (!isManager) {
-      setFeedbackCardErrorText(
-        'Only the manager of this campaign can add a request.'
-      );
-      setFeedbackErrorCardOpen(true);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload: 'Only the manager of this campaign can add a request.',
+      });
       return;
     }
 
@@ -91,12 +89,12 @@ const RequestList = ({ props }) => {
       >
         Add a Request
       </AddRequestButton>
-      <FeedbackCard
-        type="error"
-        open={feedbackCardErrorOpen}
-        setOpen={setFeedbackErrorCardOpen}
-        headline="Something went wrong"
-        contentText={feedbackCardErrorText}
+
+      <Feedback
+        cardType="error"
+        cardOpen={feedbackState.cardError}
+        setCardClose={() => dispatch({ type: ACTIONS.CARD_ERROR_CLOSE })}
+        cardContentText={feedbackState.cardErrorText}
       />
     </MainGrid>
   );

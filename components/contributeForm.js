@@ -1,7 +1,6 @@
 import { Button, Grid } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
-import { useState, useEffect } from 'react';
 import Campaign from '../ethereum/campaign';
 import web3 from '../ethereum/web3';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -9,7 +8,8 @@ import { useRouter } from 'next/router';
 import { styled } from '@mui/material/styles';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Feedback from './feedback';
+import Feedback from './sharedUI/feedback';
+import useFormState from './sharedHooks/formStateHook';
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   width: '100%',
@@ -57,18 +57,9 @@ const ContributeButton = styled(Button)(({ theme }) => ({
 }));
 
 const ContributeForm = ({ minContribution }) => {
-  const [spinner, setSpinner] = useState(false);
+  const [feedbackState, dispatch, ACTIONS] = useFormState();
   const router = useRouter();
   const address = router.query.campaignAddress;
-
-  // Cards
-  const [feedbackCardWaitingOpen, setFeedbackWaitingCardOpen] = useState(false);
-  const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
-  const [feedbackCardErrorText, setFeedbackCardErrorText] = useState('');
-
-  // Bars
-  const [feedbackBarSuccessOpen, setFeedbackBarSuccessOpen] = useState(false);
-  const [feedbackBarErrorOpen, setFeedbackBarErrorOpen] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -88,17 +79,19 @@ const ContributeForm = ({ minContribution }) => {
       const accounts = await web3.eth.getAccounts();
       const campaign = await Campaign(address);
       const isSupporter = await campaign.methods.supporters(accounts[0]).call();
+
       if (isSupporter) {
-        setFeedbackCardErrorText(
-          "You already contributed this campaign. You can't contribute again for the sake of approval voting system."
-        );
-        setFeedbackErrorCardOpen(true);
+        dispatch({
+          type: ACTIONS.ERROR,
+          payload:
+            "You already contributed this campaign. You can't contribute again for the sake of approval voting system.",
+        });
+
         return;
       }
 
       // start progress
-      setSpinner(true);
-      setFeedbackWaitingCardOpen(true);
+      dispatch({ type: ACTIONS.START_PROCESS });
 
       try {
         const campaign = await Campaign(address);
@@ -107,16 +100,14 @@ const ContributeForm = ({ minContribution }) => {
           value: web3.utils.toWei(values.contribution, 'ether'),
         });
 
-        setSpinner(false);
-        setFeedbackWaitingCardOpen(false);
-        setFeedbackBarSuccessOpen(true);
+        dispatch({ type: ACTIONS.SUCCESS });
         formik.values.contribution = '';
         router.replace(`/campaigns/${address}`);
       } catch (err) {
-        setSpinner(false);
-        setFeedbackWaitingCardOpen(false);
-        setFeedbackErrorCardOpen(true);
-        setFeedbackCardErrorText(err.message);
+        dispatch({
+          type: ACTIONS.ERROR,
+          payload: err.message,
+        });
       }
     },
   });
@@ -149,11 +140,15 @@ const ContributeForm = ({ minContribution }) => {
           <ButtonGrid>
             <ContributeButton
               type="submit"
-              disabled={spinner}
+              disabled={feedbackState.spinner}
               variant="contained"
-              endIcon={spinner ? '' : <AddIcon />}
+              endIcon={feedbackState.spinner ? '' : <AddIcon />}
             >
-              {spinner ? <CircularProgress color="secondary" /> : 'Contribute!'}
+              {feedbackState.spinner ? (
+                <CircularProgress color="secondary" />
+              ) : (
+                'Contribute!'
+              )}
             </ContributeButton>
           </ButtonGrid>
         </InnerFormGrid>
@@ -161,19 +156,21 @@ const ContributeForm = ({ minContribution }) => {
 
       <Feedback
         cardType="waiting"
-        cardOpen={feedbackCardWaitingOpen}
-        barOpen={feedbackBarSuccessOpen}
-        setBarOpen={setFeedbackBarSuccessOpen}
+        cardOpen={feedbackState.cardWaiting}
+        barOpen={feedbackState.barSuccess}
+        setBarOpen={() => dispatch({ type: ACTIONS.BAR_SUCCESS_OPEN })}
+        setBarClose={() => dispatch({ type: ACTIONS.BAR_SUCCESS_CLOSE })}
         barContentText="You contribution process has successfully completed."
         barType="success"
       />
       <Feedback
         cardType="error"
-        cardOpen={feedbackCardErrorOpen}
-        setCardOpen={setFeedbackErrorCardOpen}
-        cardContentText={feedbackCardErrorText}
-        barOpen={feedbackBarErrorOpen}
-        setBarOpen={setFeedbackBarErrorOpen}
+        cardOpen={feedbackState.cardError}
+        setCardClose={() => dispatch({ type: ACTIONS.CARD_ERROR_CLOSE })}
+        cardContentText={feedbackState.cardErrorText}
+        barOpen={feedbackState.barError}
+        setBarClose={() => dispatch({ type: ACTIONS.BAR_ERROR_CLOSE })}
+        setBarOpen={() => dispatch({ type: ACTIONS.BAR_ERROR_OPEN })}
         barContentText="Your contribution process has not completed."
         barType="error"
       />

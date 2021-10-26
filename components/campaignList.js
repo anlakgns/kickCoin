@@ -8,6 +8,7 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   gap: '1rem',
+  marginBottom: "5rem"
 }));
 const CardsGrid = styled(Grid)(({ theme }) => ({
   display: 'flex',
@@ -33,7 +34,7 @@ const StyledPagination = styled(Pagination)(({ theme }) => ({
 
 const CampaignList = ({ summaryList }) => {
   const [page, setPage] = useState(1);
-  const [campaignAmountPerPage, setCampaignAmountPerPage] = useState(4);
+  const [campaignAmountPerPage, setCampaignAmountPerPage] = useState(8);
   const [summaryListPaged, setSummaryListPages] = useState([]);
 
   // page render logic
@@ -62,7 +63,7 @@ const CampaignList = ({ summaryList }) => {
           );
         })}
       </CardsGrid>
-      {summaryList.length > 4 ? (
+      {summaryList.length > 8 ? (
         <PaginationGrid>
           <StyledPagination
             count={Math.ceil(summaryList.length / campaignAmountPerPage)}

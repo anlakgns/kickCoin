@@ -62,21 +62,24 @@ const Feedback = ({
   cardOpen, // all types
   cardType, // all types
   cardHeadline, // question & waiting(optional)
-  setCardOpen, // error
+  setCardClose, // error
   deletePermanently, // question
   cardContentText, // error & question & waiting(optional)
-  cardCancel, // question
-  barOpen, // all types
-  setBarOpen, // all types
-  barContentText, // all
-  barType, // all
+  cardCancel, 
+
+  // bar optional if you want use all below or none
+  barOpen, 
+  setBarClose, 
+  setBarOpen, 
+  barContentText,  
+  barType, 
 }) => {
   const handleBarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
 
-    setBarOpen(false);
+    setBarClose();
   };
   return (
     <>
@@ -112,8 +115,8 @@ const Feedback = ({
                 <OkeyButton
                   variant="outlined"
                   onClick={() => {
-                    setCardOpen(false);
-                    setBarOpen(true);
+                    setCardClose();
+                    setBarOpen ? setBarOpen() : ""
                   }}
                 >
                   Okey

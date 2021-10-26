@@ -12,15 +12,28 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '1rem 1rem',
   paddingTop: '4rem',
   display: 'flex',
-  height: '100%',
+  position: 'fixed',
+  width: '16.666%',
+  left: '0px',
   gap: '3rem',
   flexDirection: 'column',
   '@media (max-width: 1000px)': {
-    maxWidth: '20rem',
     backgroundColor: theme.palette.custom.blueDark,
     height: '100vh',
     marginTop: '0rem',
     paddingTop: '2rem',
+  },
+  '@media (min-width: 0px) and (max-width: 450px)': {
+    width: '50%',
+  },
+  '@media (min-width: 451px) and (max-width: 600px)': {
+    width: '45%',
+  },
+  '@media (min-width: 601px) and (max-width: 800px)': {
+    width: '35%',
+  },
+  '@media (min-width: 801px) and (max-width: 1000px)': {
+    width: '30%',
   },
 }));
 
@@ -174,20 +187,19 @@ const Sidebar = ({ setDrawerOpen }) => {
         case '/':
           return (
             <span>
-              <WarningSpan>View Campaign</WarningSpan> action doesn't cost any
-              gas for you. You can check campaigns safely.
+              <WarningSpan>View Campaign</WarningSpan> : no gas. You can check
+              campaigns safely.
             </span>
           );
 
         case '/campaigns/[campaignAddress]':
           return (
             <span>
-              <WarningSpan>View Results</WarningSpan> action doesn't cost any
-              gas for you. You can check campaigns. However{' '}
-              <WarningSpan>Contribute</WarningSpan> costs you the amount of
-              contribution you make and some trivial gas.
-              <WarningSpan>Delete</WarningSpan> costs you some gas and all
-              balance is send to the supporters.
+              <WarningSpan>View Results</WarningSpan> : no gas. <br />
+              <WarningSpan>Contribute</WarningSpan> costs some trivial amount of
+              gas and contribution amount. <br />
+              <WarningSpan>Delete</WarningSpan> costs some trivial amount of
+              gas.
             </span>
           );
         case '/campaigns/[campaignAddress]/requests':
@@ -210,8 +222,11 @@ const Sidebar = ({ setDrawerOpen }) => {
         case '/campaigns/new':
           return (
             <span>
-              <WarningSpan>Create</WarningSpan> action will cost some amount of
-              gas for you.
+              <WarningSpan>Create</WarningSpan> : costs some trivial amount of
+              gas.
+              <br />
+              <WarningSpan>Campaigns</WarningSpan> can not be editted later.
+              Please make sure everything is correct.
             </span>
           );
 

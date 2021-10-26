@@ -4,15 +4,13 @@ import { useRouter } from 'next/router';
 import { Button, Grid } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
-import { useState } from 'react';
 import web3 from '../ethereum/web3';
 import CircularProgress from '@mui/material/CircularProgress';
 import Campaign from '../ethereum/campaign';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import FeedbackCard from './feedbackCard';
-import FeedbackBar from './feedbackBar';
-import Feedback from './feedback';
+import Feedback from './sharedUI/feedback';
+import useFormState from './sharedHooks/formStateHook';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
@@ -45,18 +43,9 @@ const CreateButton = styled(Button)(({ theme }) => ({
 }));
 
 const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
-  const [spinner, setSpinner] = useState(false);
   const router = useRouter();
   const address = router.query.campaignAddress;
-
-  // Cards
-  const [feedbackCardWaitingOpen, setFeedbackWaitingCardOpen] = useState(false);
-  const [feedbackCardErrorOpen, setFeedbackErrorCardOpen] = useState(false);
-  const [feedbackCardErrorText, setFeedbackCardErrorText] = useState('');
-
-  // Bars
-  const [feedbackBarSuccessOpen, setFeedbackBarSuccessOpen] = useState(false);
-  const [feedbackBarErrorOpen, setFeedbackBarErrorOpen] = useState(false);
+  const [feedbackState, dispatch, ACTIONS] = useFormState();
 
   const formik = useFormik({
     initialValues: {
@@ -74,8 +63,10 @@ const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
       const accounts = await web3.eth.getAccounts();
       const isManager = accounts[0] === manager;
       if (!isManager) {
-        setFeedbackCardErrorText('Only the manager can make a request.');
-        setFeedbackErrorCardOpen(true);
+        dispatch({
+          type: ACTIONS.ERROR,
+          payload: 'Only the manager can make a request.',
+        });
         router.push(`/campaigns/${address}/requests`);
         return;
       }
@@ -85,20 +76,20 @@ const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
         parseFloat(balance);
       console.log(enoughBalanceCheck);
       if (!enoughBalanceCheck) {
-        setFeedbackCardErrorText(
-          `You don't have enough balance to make this request. You can request maximum ${
+        dispatch({
+          type: ACTIONS.ERROR,
+          payload: `You don't have enough balance to make this request. You can request maximum ${
             balance - requestsBalance >= 0
               ? (balance - requestsBalance).toFixed(5)
               : 0
-          } ether for now unless you have more contributors. `
-        );
-        setFeedbackErrorCardOpen(true);
+          } ether for now unless you have more contributors. `,
+        });
+
         return;
       }
 
-      // start process
-      setSpinner(true);
-      setFeedbackWaitingCardOpen(true);
+      // start progress
+      dispatch({ type: ACTIONS.START_PROCESS });
 
       try {
         const campaign = await Campaign(address);
@@ -113,15 +104,13 @@ const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
           .send({
             from: accounts[0],
           });
-        setSpinner(false);
-        setFeedbackWaitingCardOpen(false);
-        setFeedbackBarSuccessOpen(true);
+        dispatch({ type: ACTIONS.SUCCESS });
         router.push(`/campaigns/${address}/requests`);
       } catch (err) {
-        setSpinner(false);
-        setFeedbackWaitingCardOpen(false);
-        setFeedbackErrorCardOpen(true);
-        setFeedbackCardErrorText(err.message);
+        dispatch({
+          type: ACTIONS.ERROR,
+          payload: err.message,
+        });
       }
     },
   });
@@ -187,30 +176,31 @@ const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
           <CreateButton
             type="submit"
             variant="contained"
-            endIcon={spinner ? '' : <AddIcon />}
+            endIcon={feedbackState.spinner ? '' : <AddIcon />}
           >
-            {spinner ? <CircularProgress color="secondary" /> : 'Create!'}
+            {feedbackState.spinner ? (
+              <CircularProgress color="secondary" />
+            ) : (
+              'Create!'
+            )}
           </CreateButton>
         </Grid>
       </form>
 
       <Feedback
         cardType="waiting"
-        cardOpen={feedbackCardWaitingOpen}
+        cardOpen={feedbackState.cardWaiting}
         barType="success"
-        barOpen={feedbackBarSuccessOpen}
-        setBarOpen={setFeedbackBarSuccessOpen}
+        barOpen={feedbackState.barSuccess}
+        setBarOpen={() => dispatch({ type: ACTIONS.BAR_SUCCESS_OPEN })}
+        setBarClose={() => dispatch({ type: ACTIONS.BAR_SUCCESS_CLOSE })}
         barContentText="Your request has created successfully."
       />
       <Feedback
         cardType="error"
-        cardOpen={feedbackCardErrorOpen}
-        setCardOpen={setFeedbackErrorCardOpen}
-        cardContentText={feedbackCardErrorText}
-        barOpen={feedbackBarErrorOpen}
-        setBarOpen={setFeedbackBarErrorOpen}
-        barContentText="Your request has not created."
-        barType="error"
+        cardOpen={feedbackState.cardError}
+        setCardClose={() => dispatch({ type: ACTIONS.CARD_ERROR_CLOSE })}
+        cardContentText={feedbackState.cardErrorText}
       />
     </MainGrid>
   );

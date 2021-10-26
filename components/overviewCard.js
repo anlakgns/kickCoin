@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { useRouter } from 'next/router';
 import web3 from '../ethereum/web3';
 import factory from '../ethereum/factory';
-import Feedback from './feedback';
+import Feedback from './sharedUI/feedback';
+import useFormState from './sharedHooks/formStateHook';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   height: 'auto',
@@ -49,47 +50,33 @@ const StyledLink = styled('span')(({ theme }) => ({
 const OverviewCard = ({ info, explanation }) => {
   const router = useRouter();
   const address = router.query.campaignAddress;
-
-  // Feedback Card States
-  const [feedbackCardDeletingProcessOpen, setFeedbackCardDeletingProcessOpen] =
-    useState(false);
-  const [feedbackCardQuestionOpen, setFeedbackQuestionCardOpen] =
-    useState(false);
-  const [feedbackCardErrorOpen, setFeedbackCardErrorOpen] = useState(false);
-  const [feedbackCardErrorText, setFeedbackCardErrorText] = useState('');
-
-  // Feedbackar States
-  const [feedbackBarSuccessOpen, setFeedbackBarSuccessOpen] = useState(false);
-  const [feedbackBarErrorOpen, setFeedbackBarErrorOpen] = useState(false);
+  const [feedbackState, dispatch, ACTIONS] = useFormState();
 
   const deleteCampaignCardHandler = () => {
-    setFeedbackQuestionCardOpen(true);
+    dispatch({ type: ACTIONS.CARD_QUESTION_OPEN });
   };
 
   const deleteCampaignCancelButton = () => {
-    setFeedbackQuestionCardOpen(false);
+    dispatch({ type: ACTIONS.CARD_QUESTION_CLOSE });
   };
 
   const deleteCampaignDeleteButton = async () => {
     try {
       const accounts = await web3.eth.getAccounts();
+      dispatch({ type: ACTIONS.START_DELETE_PROCESS });
 
-      setFeedbackQuestionCardOpen(false);
-      setFeedbackCardDeletingProcessOpen(true);
       await factory.methods.deleteCampaign(address).send({
         from: accounts[0],
       });
-      setFeedbackCardDeletingProcessOpen(false);
-      setFeedbackBarSuccessOpen(true);
-
+      dispatch({ type: ACTIONS.SUCCESS });
       setTimeout(() => {
         router.push('/');
       }, [2000]);
     } catch (err) {
-      setFeedbackQuestionCardOpen(false);
-      setFeedbackCardDeletingProcessOpen(false);
-      setFeedbackCardErrorOpen(true);
-      setFeedbackCardErrorText(err.message);
+      dispatch({
+        type: ACTIONS.ERROR,
+        payload: err.message,
+      });
     }
   };
 
@@ -122,18 +109,19 @@ const OverviewCard = ({ info, explanation }) => {
         <>
           <Feedback
             cardType="waiting"
-            cardOpen={feedbackCardDeletingProcessOpen}
+            cardOpen={feedbackState.cardWaiting}
             cardHeadline="Deleting Process"
             cardContentText="All amount of ether in this campaign are paying back your supporters and your campaign is deleting permanently. Please wait about 15-30 seconds."
-            barOpen={feedbackBarSuccessOpen}
-            setBarOpen={setFeedbackBarSuccessOpen}
+            barOpen={feedbackState.barSuccess}
+            setBarOpen={() => dispatch({ type: ACTIONS.BAR_SUCCESS_OPEN })}
+            setBarClose={() => dispatch({ type: ACTIONS.BAR_SUCCESS_CLOSE })}
             barContentText="Your campaign has deleted successfully."
             barType="success"
           />
 
           <Feedback
             cardType="question"
-            cardOpen={feedbackCardQuestionOpen}
+            cardOpen={feedbackState.cardQuestion}
             cardHeadline="Deleting Process"
             deletePermanently={deleteCampaignDeleteButton}
             cardContentText="We will payback all balance in this campaing to your supporters and delete this campaign permanently. Are you sure ?"
@@ -142,11 +130,12 @@ const OverviewCard = ({ info, explanation }) => {
 
           <Feedback
             cardType="error"
-            cardOpen={feedbackCardErrorOpen}
-            setCardOpen={setFeedbackCardErrorOpen}
-            cardContentText={feedbackCardErrorText}
-            barOpen={feedbackBarErrorOpen}
-            setBarOpen={setFeedbackBarErrorOpen}
+            cardOpen={feedbackState.cardError}
+            setCardClose={() => dispatch({ type: ACTIONS.CARD_ERROR_CLOSE })}
+            cardContentText={feedbackState.cardErrorText}
+            barOpen={feedbackState.barError}
+            setBarClose={() => dispatch({ type: ACTIONS.BAR_ERROR_CLOSE })}
+            setBarOpen={() => dispatch({ type: ACTIONS.BAR_ERROR_OPEN })}
             barContentText="Your campaign has not deleted."
             barType="error"
           />

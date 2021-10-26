@@ -138,6 +138,7 @@ contract Campaign {
     
       function deleteRequest(uint index) public restricted {
         Request storage request = requests[index];
+        requestsBalance = requestsBalance - request.value;
         request.status = "deleted";
     } 
 
