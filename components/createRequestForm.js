@@ -12,18 +12,19 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import FeedbackCard from './feedbackCard';
 import FeedbackBar from './feedbackBar';
+import Feedback from './feedback';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
   borderRadius: '1rem',
   overflow: 'hidden',
   padding: '2rem 5rem',
-  "@media (min-width: 0px) and (max-width: 700px)": {
-    padding: "2rem 2rem"
+  '@media (min-width: 0px) and (max-width: 700px)': {
+    padding: '2rem 2rem',
   },
   '@media (min-width: 700px) and (max-width: 1000px)': {
     marginBottom: '5rem',
-    padding: "2rem 3rem",
+    padding: '2rem 3rem',
   },
 }));
 
@@ -73,9 +74,9 @@ const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
       const accounts = await web3.eth.getAccounts();
       const isManager = accounts[0] === manager;
       if (!isManager) {
-        setFeedbackCardErrorText('Only the manager can make a request.')
-        setFeedbackErrorCardOpen(true)
-        router.push(`/campaigns/${address}/requests`)
+        setFeedbackCardErrorText('Only the manager can make a request.');
+        setFeedbackErrorCardOpen(true);
+        router.push(`/campaigns/${address}/requests`);
         return;
       }
       // enough balance check
@@ -86,7 +87,9 @@ const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
       if (!enoughBalanceCheck) {
         setFeedbackCardErrorText(
           `You don't have enough balance to make this request. You can request maximum ${
-            (balance - requestsBalance) >= 0 ? (balance - requestsBalance).toFixed(5) : 0
+            balance - requestsBalance >= 0
+              ? (balance - requestsBalance).toFixed(5)
+              : 0
           } ether for now unless you have more contributors. `
         );
         setFeedbackErrorCardOpen(true);
@@ -122,13 +125,6 @@ const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
       }
     },
   });
-
-  // Showing error bar after error card closed.
-  useEffect(() => {
-    if (Boolean(feedbackCardErrorText) && !feedbackCardErrorOpen) {
-      setFeedbackBarErrorOpen(true);
-    }
-  }, [feedbackCardErrorText, feedbackCardErrorOpen]);
 
   return (
     <MainGrid>
@@ -197,31 +193,24 @@ const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
           </CreateButton>
         </Grid>
       </form>
-      <FeedbackCard
-        type="waiting"
-        open={feedbackCardWaitingOpen}
-        setOpen={setFeedbackWaitingCardOpen}
-        headline="Validation Process"
-        contentText="Every attempt to change in ethereum network needs to validated by miners. This process takes 15-30 seconds in ethereum network. Please be patient and wait we will feedback you when the process is done. "
+
+      <Feedback
+        cardType="waiting"
+        cardOpen={feedbackCardWaitingOpen}
+        barType="success"
+        barOpen={feedbackBarSuccessOpen}
+        setBarOpen={setFeedbackBarSuccessOpen}
+        barContentText="Your request has created successfully."
       />
-      <FeedbackCard
-        type="error"
-        open={feedbackCardErrorOpen}
-        setOpen={setFeedbackErrorCardOpen}
-        headline="Something went wrong"
-        contentText={feedbackCardErrorText}
-      />
-      <FeedbackBar
-        type="success"
-        open={feedbackBarSuccessOpen}
-        setOpen={setFeedbackBarSuccessOpen}
-        contentText="Your request has created successfully."
-      />
-      <FeedbackBar
-        type="error"
-        open={feedbackBarErrorOpen}
-        setOpen={setFeedbackBarErrorOpen}
-        contentText="Your request has not created."
+      <Feedback
+        cardType="error"
+        cardOpen={feedbackCardErrorOpen}
+        setCardOpen={setFeedbackErrorCardOpen}
+        cardContentText={feedbackCardErrorText}
+        barOpen={feedbackBarErrorOpen}
+        setBarOpen={setFeedbackBarErrorOpen}
+        barContentText="Your request has not created."
+        barType="error"
       />
     </MainGrid>
   );

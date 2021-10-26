@@ -9,8 +9,7 @@ import { useRouter } from 'next/router';
 import { styled } from '@mui/material/styles';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import FeedbackCard from './feedbackCard';
-import FeedbackBar from './feedbackBar';
+import Feedback from './feedback';
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   width: '100%',
@@ -52,8 +51,8 @@ const ContributeButton = styled(Button)(({ theme }) => ({
   padding: 0,
   '@media (max-width: 600px)': {
     margin: '0rem',
-    height: "3rem",
-    marginBottom: "2rem"
+    height: '3rem',
+    marginBottom: '2rem',
   },
 }));
 
@@ -111,7 +110,7 @@ const ContributeForm = ({ minContribution }) => {
         setSpinner(false);
         setFeedbackWaitingCardOpen(false);
         setFeedbackBarSuccessOpen(true);
-        // formik.values.contribution = '';
+        formik.values.contribution = '';
         router.replace(`/campaigns/${address}`);
       } catch (err) {
         setSpinner(false);
@@ -121,13 +120,6 @@ const ContributeForm = ({ minContribution }) => {
       }
     },
   });
-
-  // Showing error bar after error card closed.
-  useEffect(() => {
-    if (Boolean(feedbackCardErrorText) && !feedbackCardErrorOpen) {
-      setFeedbackBarErrorOpen(true);
-    }
-  }, [feedbackCardErrorText, feedbackCardErrorOpen]);
 
   return (
     <>
@@ -166,32 +158,24 @@ const ContributeForm = ({ minContribution }) => {
           </ButtonGrid>
         </InnerFormGrid>
       </form>
-     
-      <FeedbackCard
-        type="waiting"
-        open={feedbackCardWaitingOpen}
-        setOpen={setFeedbackWaitingCardOpen}
-        headline="Validation Process"
-        contentText="Every attempt to change in ethereum network needs to validated by miners. This process takes 15-30 seconds in ethereum network. Please be patient and wait we will feedback you when the process is done. "
+
+      <Feedback
+        cardType="waiting"
+        cardOpen={feedbackCardWaitingOpen}
+        barOpen={feedbackBarSuccessOpen}
+        setBarOpen={setFeedbackBarSuccessOpen}
+        barContentText="You contribution process has successfully completed."
+        barType="success"
       />
-      <FeedbackCard
-        type="error"
-        open={feedbackCardErrorOpen}
-        setOpen={setFeedbackErrorCardOpen}
-        headline="Something went wrong"
-        contentText={feedbackCardErrorText}
-      />
-      <FeedbackBar
-        type="success"
-        open={feedbackBarSuccessOpen}
-        setOpen={setFeedbackBarSuccessOpen}
-        contentText="Your contribution has completed successfully."
-      />
-      <FeedbackBar
-        type="error"
-        open={feedbackBarErrorOpen}
-        setOpen={setFeedbackBarErrorOpen}
-        contentText="Your contribution has not completed."
+      <Feedback
+        cardType="error"
+        cardOpen={feedbackCardErrorOpen}
+        setCardOpen={setFeedbackErrorCardOpen}
+        cardContentText={feedbackCardErrorText}
+        barOpen={feedbackBarErrorOpen}
+        setBarOpen={setFeedbackBarErrorOpen}
+        barContentText="Your contribution process has not completed."
+        barType="error"
       />
     </>
   );

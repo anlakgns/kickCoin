@@ -26,7 +26,7 @@ const Home = ({ summaryList }) => {
 export default Home;
 
 // Server Side
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const campaignslist = await factory.methods.getDeployedCampaigns().call();
   const summariesArray = await Promise.all(
     Array(parseInt(campaignslist.length))

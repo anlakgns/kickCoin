@@ -19,7 +19,7 @@ const Requests = (props) => {
 
 export default Requests;
 
-export async function getStaticProps(context) {
+export async function getServerSideProps(context) {
   const { params } = context;
   const address = params.campaignAddress;
   const campaign = Campaign(address);
@@ -39,18 +39,5 @@ export async function getStaticProps(context) {
       supportersCount,
       requestCount,
     },
-  };
-}
-
-export async function getStaticPaths() {
-  return {
-    paths: [
-      {
-        params: {
-          campaignAddress: '0x08409F55Cb6aF037733c0FE180919e49D0AF4f62',
-        },
-      },
-    ],
-    fallback: true,
   };
 }

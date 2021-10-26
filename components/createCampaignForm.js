@@ -11,20 +11,19 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CampaignCard from './campaignCard';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import FeedbackCard from './feedbackCard';
-import FeedbackBar from './feedbackBar';
+import Feedback from './feedback';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
   borderRadius: '1rem',
   overflow: 'hidden',
   padding: '2rem 5rem',
-  "@media (min-width: 0px) and (max-width: 700px)": {
-    padding: "2rem 2rem"
+  '@media (min-width: 0px) and (max-width: 700px)': {
+    padding: '2rem 2rem',
   },
   '@media (min-width: 700px) and (max-width: 1000px)': {
     marginBottom: '5rem',
-    padding: "2rem 3rem",
+    padding: '2rem 3rem',
   },
 }));
 
@@ -42,10 +41,10 @@ const CreateButton = styled(Button)(({ theme }) => ({
   marginTop: '2rem',
   margin: 'auto',
   width: '20rem',
-  "@media (max-width: 1000px)": {
-    marginBottom: "2rem",
-    marginTop: "3rem"
-  }
+  '@media (max-width: 1000px)': {
+    marginBottom: '2rem',
+    marginTop: '3rem',
+  },
 }));
 
 const SubHeadline = styled(Typography)(({ theme }) => ({
@@ -255,31 +254,24 @@ const CreateCampaignForm = ({ deployedCampaignsList }) => {
           </CreateButton>
         </Grid>
       </form>
-      <FeedbackCard
-        type="waiting"
-        open={feedbackCardWaitingOpen}
-        setOpen={setFeedbackWaitingCardOpen}
-        headline="Validation Process"
-        contentText="Every attempt to change in ethereum network needs to validated by miners. This process takes 15-30 seconds in ethereum network. Please be patient and wait we will feedback you when the process is done. "
+
+      <Feedback
+        cardType="waiting"
+        cardOpen={feedbackCardWaitingOpen}
+        barType="success"
+        barOpen={feedbackBarSuccessOpen}
+        setBarOpen={setFeedbackBarSuccessOpen}
+        barContentText="Your campaign has created successfully."
       />
-      <FeedbackCard
-        type="error"
-        open={feedbackCardErrorOpen}
-        setOpen={setFeedbackErrorCardOpen}
-        headline="Something went wrong"
-        contentText={feedbackCardErrorText}
-      />
-      <FeedbackBar
-        type="success"
-        open={feedbackBarSuccessOpen}
-        setOpen={setFeedbackBarSuccessOpen}
-        contentText="Your campaign has created successfully."
-      />
-      <FeedbackBar
-        type="error"
-        open={feedbackBarErrorOpen}
-        setOpen={setFeedbackBarErrorOpen}
-        contentText="Your campaign has not created."
+      <Feedback
+        cardType="error"
+        cardOpen={feedbackCardErrorOpen}
+        setCardOpen={setFeedbackErrorCardOpen}
+        cardContentText={feedbackCardErrorText}
+        barOpen={feedbackBarErrorOpen}
+        setBarOpen={setFeedbackBarErrorOpen}
+        barContentText="Your campaign has not created."
+        barType="error"
       />
     </MainGrid>
   );
