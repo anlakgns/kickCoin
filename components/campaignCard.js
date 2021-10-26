@@ -37,7 +37,6 @@ const MainGrid = styled(Grid)(({ theme }) => ({
     minWidth: '27.5rem',
   },
 }));
-
 const ImageDiv = styled('div')(({ theme }) => ({
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center',
@@ -49,7 +48,6 @@ const ImageDiv = styled('div')(({ theme }) => ({
     height: '12rem',
   },
 }));
-
 const TextContentGrid = styled(Grid)(({ theme }) => ({
   padding: '1rem',
   '@media (min-width: 1000px)': {
@@ -69,11 +67,14 @@ const FundedGrid = styled(Grid)(({ theme }) => ({
     marginRight: '1rem',
   },
 }));
-
 const ButtonGrid = styled(Grid)(({ theme }) => ({
   '@media (min-width: 1001px)': {
     flex: 1,
   },
+}));
+const LinearProgressGrid = styled(Grid)(({ theme }) => ({
+  width: '100%',
+  padding: '1rem',
 }));
 
 const Headline = styled(Typography)(({ theme }) => ({
@@ -81,7 +82,6 @@ const Headline = styled(Typography)(({ theme }) => ({
   color: theme.palette.custom.textWhite,
   width: '100%',
 }));
-
 const Description = styled(Typography)(({ theme }) => ({
   color: theme.palette.custom.textWhite,
   width: '100%',
@@ -89,7 +89,6 @@ const Description = styled(Typography)(({ theme }) => ({
   marginTop: '0.5rem',
   marginBottom: '0.5rem',
 }));
-
 const Percentage = styled(Typography)(({ theme }) => ({
   color: theme.palette.custom.textWhite,
 }));
@@ -97,7 +96,6 @@ const FundedText = styled(Typography)(({ theme }) => ({
   color: theme.palette.custom.orange,
   fontWeight: 'bold',
 }));
-
 const Circle = styled('div')(({ theme }) => ({
   position: 'absolute',
   borderRadius: '50%',
@@ -108,7 +106,6 @@ const Circle = styled('div')(({ theme }) => ({
   left: '50%',
   transform: 'translate(-50%, -50%)',
 }));
-
 const ViewButton = styled(Button)(({ theme }) => ({
   height: '4rem',
   width: '12rem',
@@ -131,19 +128,12 @@ const ViewButton = styled(Button)(({ theme }) => ({
     borderRadiusTop: '0rem',
   },
 }));
-
 const StyledLinearProgress = styled(LinearProgress)(({ theme }) => ({
   height: '0.4rem',
   [`& .${linearProgressClasses.bar}`]: {
     backgroundColor: theme.palette.custom.orangeLight,
   },
 }));
-
-const LinearProgressGrid = styled(Grid)(({ theme }) => ({
-  width: '100%',
-  padding: '1rem',
-}));
-
 const StyledLinearProgressBox = styled(Box)(({ theme }) => ({
   width: '100%',
   padding: '1rem',
@@ -151,7 +141,6 @@ const StyledLinearProgressBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.custom.gradient1,
   borderRadius: '1rem',
 }));
-
 const FundedTextMobile = styled(Typography)(({ theme }) => ({
   color: theme.palette.custom.orangeLight,
   fontWeight: 'bold',
@@ -227,6 +216,7 @@ const CampaignCard = ({ campaingInfo, preview }) => {
           View Campaign
         </ViewButton>
       </ButtonGrid>
+   
     </MainGrid>
   );
 };

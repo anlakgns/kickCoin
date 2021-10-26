@@ -9,25 +9,22 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   flexDirection: 'column',
   gap: '1rem',
 }));
-
 const CardsGrid = styled(Grid)(({ theme }) => ({
   display: 'flex',
-  flexWrap: "wrap",
+  flexWrap: 'wrap',
   flexDirection: 'row',
   gap: '3rem',
 }));
-
 const PaginationGrid = styled(Grid)(({ theme }) => ({
   width: '100%',
   display: 'flex',
   justifyContent: 'center',
   padding: '1rem',
-  "@media (max-width: 1000px)": {
-    marginBottom: "5rem",
-    marginTop: "2rem",
-  }
+  '@media (max-width: 1000px)': {
+    marginBottom: '5rem',
+    marginTop: '2rem',
+  },
 }));
-
 const StyledPagination = styled(Pagination)(({ theme }) => ({
   '& .MuiPaginationItem-root': {
     color: theme.palette.custom.textWhite,
@@ -39,10 +36,11 @@ const CampaignList = ({ summaryList }) => {
   const [campaignAmountPerPage, setCampaignAmountPerPage] = useState(4);
   const [summaryListPaged, setSummaryListPages] = useState([]);
 
+  // page render logic
   useEffect(() => {
     setSummaryListPages(
       summaryList.slice(
-        (page - 1) * (campaignAmountPerPage),
+        (page - 1) * campaignAmountPerPage,
         campaignAmountPerPage * page
       )
     );
@@ -53,25 +51,29 @@ const CampaignList = ({ summaryList }) => {
   };
 
   return (
-    <MainGrid item container >
+    <MainGrid item container>
       <CardsGrid item container direction="row">
-      {summaryListPaged.map((campaingInfo) => {
-        return (
-          <CampaignCard
-            key={campaingInfo.address}
-            campaingInfo={campaingInfo}
-          />
-        );
-      })}
+        {summaryListPaged.map((campaingInfo) => {
+          return (
+            <CampaignCard
+              key={campaingInfo.address}
+              campaingInfo={campaingInfo}
+            />
+          );
+        })}
       </CardsGrid>
-      <PaginationGrid>
-        <StyledPagination
-          count={Math.ceil(summaryList.length / campaignAmountPerPage)}
-          onChange={paginationHandler}
-          page={page}
-          color="secondary"
-        />
-      </PaginationGrid>
+      {summaryList.length > 4 ? (
+        <PaginationGrid>
+          <StyledPagination
+            count={Math.ceil(summaryList.length / campaignAmountPerPage)}
+            onChange={paginationHandler}
+            page={page}
+            color="secondary"
+          />
+        </PaginationGrid>
+      ) : (
+        ''
+      )}
     </MainGrid>
   );
 };

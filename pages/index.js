@@ -31,7 +31,7 @@ export async function getStaticProps() {
   const summariesArray = await Promise.all(
     Array(parseInt(campaignslist.length))
       .fill()
-      .map((element, index) => {
+      .map((_, index) => {
         return Campaign(campaignslist[index]).methods.getSummary().call();
       })
   );

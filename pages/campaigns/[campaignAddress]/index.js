@@ -10,11 +10,11 @@ import Headline from '../../../components/sharedUI/Headline';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
-  '@media (max-width: 1000px)': {
+  '@media (min-width: 0px) and (max-width: 1000px)': {
     marginBottom: '5rem',
+    padding: '0rem 3rem',
   },
 }));
-
 const SubHeadline = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
   color: theme.palette.custom.blueLight,
@@ -22,7 +22,6 @@ const SubHeadline = styled(Typography)(({ theme }) => ({
   marginTop: '3rem',
   marginBottom: '1rem',
 }));
-
 const About = styled(Typography)(({ theme }) => ({
   color: theme.palette.custom.textWhite,
   width: '100%',
@@ -30,7 +29,6 @@ const About = styled(Typography)(({ theme }) => ({
   marginTop: '1rem',
   marginBottom: '2rem',
 }));
-
 const AboutGrid = styled(Grid)(({ theme }) => ({
   marginTop: '2rem',
 }));
@@ -42,7 +40,6 @@ const CampaignOverview = ({ cardsInfo, additionalInfo }) => {
         headlineText={`${additionalInfo?.projectName} Campaign Overview`}
         backRouter="true"
       />
-
       <AboutGrid>
         <SubHeadline align="left" variant="subtitle1">
           About{' '}
@@ -70,7 +67,6 @@ export async function getStaticProps(context) {
   const { params } = context;
   const address = params.campaignAddress;
   const campaign = Campaign(address);
-
   const summary = await campaign.methods.getSummary().call();
 
   return {
@@ -99,7 +95,7 @@ export async function getStaticPaths() {
     paths: [
       {
         params: {
-          campaignAddress: '0xdBc1BFB90e5d7f869C62665d96E24137bA9f',
+          campaignAddress: '0x08409F55Cb6aF037733c0FE180919e49D0AF4f62',
         },
       },
     ],

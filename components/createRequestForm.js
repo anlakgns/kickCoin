@@ -18,6 +18,13 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   borderRadius: '1rem',
   overflow: 'hidden',
   padding: '2rem 5rem',
+  "@media (min-width: 0px) and (max-width: 700px)": {
+    padding: "2rem 2rem"
+  },
+  '@media (min-width: 700px) and (max-width: 1000px)': {
+    marginBottom: '5rem',
+    padding: "2rem 3rem",
+  },
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
@@ -79,7 +86,7 @@ const CreateRequestForm = ({ balance, manager, requestsBalance }) => {
       if (!enoughBalanceCheck) {
         setFeedbackCardErrorText(
           `You don't have enough balance to make this request. You can request maximum ${
-            balance - requestsBalance
+            (balance - requestsBalance) >= 0 ? (balance - requestsBalance).toFixed(5) : 0
           } ether for now unless you have more contributors. `
         );
         setFeedbackErrorCardOpen(true);

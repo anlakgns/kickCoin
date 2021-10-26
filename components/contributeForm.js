@@ -1,4 +1,4 @@
-import { Button, Typography, Grid } from '@mui/material';
+import { Button, Grid } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import AddIcon from '@mui/icons-material/Add';
 import { useState, useEffect } from 'react';
@@ -17,7 +17,6 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   color: theme.palette.custom.blueLight,
   padding: '1rem 0rem',
 }));
-
 const InnerFormGrid = styled(Grid)(({ theme }) => ({
   width: '100%',
   color: theme.palette.custom.blueLight,
@@ -33,19 +32,16 @@ const InnerFormGrid = styled(Grid)(({ theme }) => ({
     flexDirection: 'column',
   },
 }));
-
-const InputGrid = styled(Grid)(({ theme }) => ({
+const InputGrid = styled(Grid)(() => ({
   flex: 10,
   '@media (max-width: 600px)': {
     flex: 1,
     flexGrow: 1,
   },
 }));
-
-const ButtonGrid = styled(Grid)(({ theme }) => ({
+const ButtonGrid = styled(Grid)(() => ({
   flex: 1,
 }));
-
 const ContributeButton = styled(Button)(({ theme }) => ({
   backgroundColor: theme.palette.custom.orange,
   color: theme.palette.custom.textWhite,
@@ -93,7 +89,6 @@ const ContributeForm = ({ minContribution }) => {
       const accounts = await web3.eth.getAccounts();
       const campaign = await Campaign(address);
       const isSupporter = await campaign.methods.supporters(accounts[0]).call();
-
       if (isSupporter) {
         setFeedbackCardErrorText(
           "You already contributed this campaign. You can't contribute again for the sake of approval voting system."
@@ -102,12 +97,12 @@ const ContributeForm = ({ minContribution }) => {
         return;
       }
 
+      // start progress
       setSpinner(true);
       setFeedbackWaitingCardOpen(true);
 
       try {
         const campaign = await Campaign(address);
-
         await campaign.methods.contribute().send({
           from: accounts[0],
           value: web3.utils.toWei(values.contribution, 'ether'),
@@ -116,7 +111,7 @@ const ContributeForm = ({ minContribution }) => {
         setSpinner(false);
         setFeedbackWaitingCardOpen(false);
         setFeedbackBarSuccessOpen(true);
-        formik.values.contribution = '';
+        // formik.values.contribution = '';
         router.replace(`/campaigns/${address}`);
       } catch (err) {
         setSpinner(false);
@@ -171,6 +166,7 @@ const ContributeForm = ({ minContribution }) => {
           </ButtonGrid>
         </InnerFormGrid>
       </form>
+     
       <FeedbackCard
         type="waiting"
         open={feedbackCardWaitingOpen}

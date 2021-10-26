@@ -1,3 +1,4 @@
 /node_modules
+/ethereum/deploy.js
 .env.local
 .next

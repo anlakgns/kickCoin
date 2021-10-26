@@ -1,4 +1,4 @@
-import { Typography, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import CreateRequestForm from '../../../../components/createRequestForm';
 import { styled } from '@mui/material/styles';
 import Campaign from '../../../../ethereum/campaign';
@@ -7,6 +7,10 @@ import Headline from '../../../../components/sharedUI/Headline';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
+  '@media (min-width: 0px) and (max-width: 1000px)': {
+    marginBottom: '5rem',
+    padding: '0rem 3rem',
+  },
 }));
 
 const RequestNew = (props) => {
@@ -29,9 +33,8 @@ export async function getStaticProps(context) {
   const { params } = context;
   const address = params.campaignAddress;
   const campaign = Campaign(address);
-
   const summary = await campaign.methods.getSummary().call();
-  console.log(summary);
+
   return {
     props: {
       balance: web3.utils.fromWei(summary[1], 'ether'),
@@ -46,7 +49,7 @@ export async function getStaticPaths() {
     paths: [
       {
         params: {
-          campaignAddress: '0xdBc1BFB90e5d7f869C62665d96E2411A9837bA9f',
+          campaignAddress: '0x08409F55Cb6aF037733c0FE180919e49D0AF4f62',
         },
       },
     ],

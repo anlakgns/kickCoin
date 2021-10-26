@@ -2,7 +2,6 @@ import Campaign from '../../../../ethereum/campaign';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import RequestList from '../../../../components/requestList';
-import RequestTable from '../../../../components/requestTable';
 import Headline from '../../../../components/sharedUI/Headline';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
@@ -23,10 +22,8 @@ export default Requests;
 export async function getStaticProps(context) {
   const { params } = context;
   const address = params.campaignAddress;
-
   const campaign = Campaign(address);
   const supportersCount = await campaign.methods.supportersCount().call();
-
   const requestCount = await campaign.methods.numRequests().call();
   const requests = await Promise.all(
     Array(parseInt(requestCount))
@@ -36,7 +33,6 @@ export async function getStaticProps(context) {
       })
   );
 
-  console.log(requests[0]);
   return {
     props: {
       requests: JSON.parse(JSON.stringify(requests)),
@@ -51,7 +47,7 @@ export async function getStaticPaths() {
     paths: [
       {
         params: {
-          campaignAddress: '0xdBc1BFB90e5d7f869C62665d96E2411A9837bA9f',
+          campaignAddress: '0x08409F55Cb6aF037733c0FE180919e49D0AF4f62',
         },
       },
     ],

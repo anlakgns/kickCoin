@@ -10,7 +10,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '1rem 1rem',
-  paddingTop: "4rem",
+  paddingTop: '4rem',
   display: 'flex',
   height: '100%',
   gap: '3rem',
@@ -186,6 +186,8 @@ const Sidebar = ({ setDrawerOpen }) => {
               gas for you. You can check campaigns. However{' '}
               <WarningSpan>Contribute</WarningSpan> costs you the amount of
               contribution you make and some trivial gas.
+              <WarningSpan>Delete</WarningSpan> costs you some gas and all
+              balance is send to the supporters.
             </span>
           );
         case '/campaigns/[campaignAddress]/requests':
