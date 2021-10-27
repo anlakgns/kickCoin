@@ -6,8 +6,8 @@ import { styled } from '@mui/material/styles';
 import { useRouter } from 'next/router';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import Feedback from './sharedUI/feedback';
-import useFormState from './sharedHooks/formStateHook';
+import Feedback from './shared/UI/feedback';
+import useFormState from './shared/hooks/formStateHook';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   height: 'auto',

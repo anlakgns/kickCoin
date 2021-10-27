@@ -10,8 +10,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CampaignCard from './campaignCard';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Feedback from './sharedUI/feedback';
-import useFormState from './sharedHooks/formStateHook';
+import Feedback from './shared/UI/feedback';
+import useFormState from './shared/hooks/formStateHook';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,

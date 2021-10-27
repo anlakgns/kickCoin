@@ -2,7 +2,7 @@ import Campaign from '../../../../ethereum/campaign';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import RequestList from '../../../../components/requestList';
-import Headline from '../../../../components/sharedUI/Headline';
+import Headline from './../../../../components/shared/UI/headline';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',

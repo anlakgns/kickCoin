@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect, useContext } from 'react';
 import factory from '../ethereum/factory';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import CampaignList from '../components/campaignList';
 import Campaign from '../ethereum/campaign';
 import web3 from '../ethereum/web3';
-import Headline from '../components/sharedUI/Headline';
+import Headline from '../components/shared/UI/headline';
+import Feedback from '../components/shared/UI/feedback';
+import useFormState from '../components/shared/hooks/formStateHook';
+import { AppStateContext } from '../components/shared/contexts/appState';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
@@ -15,11 +18,38 @@ const MainGrid = styled(Grid)(({ theme }) => ({
 }));
 
 const Home = ({ summaryList }) => {
+  const [feedbackState, dispatch, ACTIONS] = useFormState();
+  const { appStates, setAppStates } = useContext(AppStateContext);
+
+  useEffect(() => {
+    if (!appStates.metamaskWarning) {
+      const metamaskCheck = async () => {
+        const accounts = await web3.eth.getAccounts();
+        const isAccounts = accounts.length > 0;
+        if (!isAccounts) {
+          dispatch({ type: ACTIONS.CARD_QUESTION_OPEN });
+        }
+      };
+      metamaskCheck();
+      setAppStates({ metamaskWarning: true });
+    }
+  }, []);
+
   return (
-    <MainGrid>
-      <Headline headlineText="Open Campaigns" />
-      <CampaignList summaryList={summaryList} />
-    </MainGrid>
+    <>
+      <MainGrid>
+        <Headline headlineText="Open Campaigns" />
+        <CampaignList summaryList={summaryList} />
+      </MainGrid>
+      <Feedback
+        cardOpen={feedbackState.cardQuestion}
+        cardType="question"
+        cardHeadline="Metamask Wallet Neccessity"
+        cardContentText="Our app works with metamask browser extension/wallet. That's why to make actions in our application you need to have metamask. If you don't have you can just visit pages."
+        cardCancel={() => dispatch({ type: ACTIONS.CARD_QUESTION_CLOSE })} //
+        cardCancelText="Okey"
+      />
+    </>
   );
 };
 

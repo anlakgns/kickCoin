@@ -9,7 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Campaign from '../ethereum/campaign';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Feedback from './sharedUI/feedback';
+import Feedback from './shared/UI/feedback';
 import useFormState from './sharedHooks/formStateHook';
 
 const MainGrid = styled(Grid)(({ theme }) => ({

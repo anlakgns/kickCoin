@@ -65,14 +65,15 @@ const Feedback = ({
   setCardClose, // error
   deletePermanently, // question
   cardContentText, // error & question & waiting(optional)
-  cardCancel, 
+  cardCancel, // question
+  cardCancelText, // question (optional)
 
   // bar optional if you want use all below or none
-  barOpen, 
-  setBarClose, 
-  setBarOpen, 
-  barContentText,  
-  barType, 
+  barOpen,
+  setBarClose,
+  setBarOpen,
+  barContentText,
+  barType,
 }) => {
   const handleBarClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -116,7 +117,7 @@ const Feedback = ({
                   variant="outlined"
                   onClick={() => {
                     setCardClose();
-                    setBarOpen ? setBarOpen() : ""
+                    setBarOpen ? setBarOpen() : '';
                   }}
                 >
                   Okey
@@ -135,14 +136,18 @@ const Feedback = ({
                 {cardContentText}
               </StyledDialogContentText>
               <GridButton>
-                <OkeyButton
-                  variant="outlined"
-                  onClick={() => deletePermanently()}
-                >
-                  Delete
-                </OkeyButton>
+                {cardCancelText ? (
+                  ''
+                ) : (
+                  <OkeyButton
+                    variant="outlined"
+                    onClick={() => deletePermanently()}
+                  >
+                    Delete
+                  </OkeyButton>
+                )}
                 <OkeyButton variant="outlined" onClick={() => cardCancel()}>
-                  Cancel
+                  {cardCancelText ? 'Okey' : 'Cancel'}
                 </OkeyButton>
               </GridButton>
             </DialogContent>

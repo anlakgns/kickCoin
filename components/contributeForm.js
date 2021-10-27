@@ -8,8 +8,8 @@ import { useRouter } from 'next/router';
 import { styled } from '@mui/material/styles';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import Feedback from './sharedUI/feedback';
-import useFormState from './sharedHooks/formStateHook';
+import Feedback from './shared/UI/feedback';
+import useFormState from './shared/hooks/formStateHook'
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   width: '100%',

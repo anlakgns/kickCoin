@@ -6,7 +6,7 @@ import web3 from '../../../ethereum/web3';
 import ContributeForm from '../../../components/contributeForm';
 import { styled } from '@mui/material/styles';
 import OverviewList from '../../../components/overviewList';
-import Headline from '../../../components/sharedUI/Headline';
+import Headline from '../../../components/shared/UI/headline';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',

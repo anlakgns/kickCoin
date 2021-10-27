@@ -3,7 +3,7 @@ import CreateRequestForm from '../../../../components/createRequestForm';
 import { styled } from '@mui/material/styles';
 import Campaign from '../../../../ethereum/campaign';
 import web3 from '../../../../ethereum/web3';
-import Headline from '../../../../components/sharedUI/Headline';
+import Headline from '../../../../components/shared/UI/headline'
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',

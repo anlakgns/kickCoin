@@ -1,7 +1,7 @@
 import { Typography, Grid } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import CreateCampaignForm from '../../components/createCampaignForm';
-import Headline from '../../components/sharedUI/Headline';
+import Headline from '../../components/shared/UI/headline';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',

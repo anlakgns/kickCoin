@@ -6,8 +6,8 @@ import RequestCard from './requestCard';
 import { useRouter } from 'next/router';
 import Campaign from '../ethereum/campaign';
 import web3 from '../ethereum/web3';
-import Feedback from './sharedUI/feedback';
-import useFormState from './sharedHooks/formStateHook';
+import Feedback from './shared/UI/feedback';
+import useFormState from "./shared/hooks/formStateHook"
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   display: 'flex',

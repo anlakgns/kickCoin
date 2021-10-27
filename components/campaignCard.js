@@ -77,7 +77,6 @@ const LinearProgressGrid = styled(Grid)(({ theme }) => ({
   width: '100%',
   padding: '1rem',
 }));
-
 const Headline = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
   color: theme.palette.custom.textWhite,

@@ -8,7 +8,6 @@ import NavBar from '../components/navBar';
 const MainGrid = styled(Grid)(({ theme }) => ({
   background: theme.palette.custom.blueDark,
 }));
-
 const SubMainGrid = styled(Grid)(({ theme }) => ({
   position: 'relative',
   minHeight: '100vh',
@@ -20,12 +19,10 @@ const SubMainGrid = styled(Grid)(({ theme }) => ({
     flexDirection: 'column',
   },
 }));
-
 const SideMenuGrid = styled(Grid)(({ theme }) => ({
   flex: 2,
 }));
 const NavBarGrid = styled(Grid)(({ theme }) => ({}));
-
 const ContentGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   flex: 10,
@@ -33,7 +30,6 @@ const ContentGrid = styled(Grid)(({ theme }) => ({
     flexGrow: 1,
   },
 }));
-
 const PatternGrid = styled('div')(({ theme }) => ({
   position: 'absolute',
   opacity: 0.15,

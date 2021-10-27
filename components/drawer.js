@@ -4,6 +4,9 @@ import SideBar from '../components/sidebar';
 
 const StyledDrawer = styled(Drawer)(() => ({
   height: '100vh',
+  ".MuiDrawer-paper": {
+    display: "unset !important"
+}
 }));
 
 const DrawerMenu = ({ drawerOpen, setDrawerOpen }) => {
