@@ -21,29 +21,29 @@ const SubMainGrid = styled(Grid)(({ theme }) => ({
 }));
 const SideMenuGrid = styled(Grid)(({ theme }) => ({
   flex: 2,
-  "@media (min-width: 1000px) and (max-width: 1200px)": {
-    flex:3
-  } 
+  '@media (min-width: 1000px) and (max-width: 1200px)': {
+    flex: 3,
+  },
 }));
 const NavBarGrid = styled(Grid)(({ theme }) => ({}));
 const ContentGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   flex: 10,
-  "@media (min-width: 1000px) and (max-width: 1200px)": {
-    flex:12
+  '@media (min-width: 1000px) and (max-width: 1200px)': {
+    flex: 12,
   },
   '@media (max-width: 1000px)': {
     flexGrow: 1,
   },
 }));
 const PatternGrid = styled('div')(({ theme }) => ({
-  position: 'absolute',
-  opacity: 0.15,
+  position: 'absolute ',
   top: 0,
   left: 0,
   height: '100%',
   width: '100%',
   backgroundImage: `url(${'/patternClear.jpg'})`,
+  opacity: '0.15',
   backgroundRepeat: 'no-repeat',
   backgroundPosition: 'center',
   backgroundSize: 'cover',

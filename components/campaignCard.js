@@ -13,7 +13,7 @@ import Box from '@mui/material/Box';
 const MainGrid = styled(Grid)(({ theme }) => ({
   minHeight: '12rem',
   overflow: 'hidden',
-  zIndex: 1200,
+  zIndex: 1200, // for firefox
   gap: '1rem',
   backgroundImage: `linear-gradient(to bottom, ${theme.palette.custom.gradient1}, ${theme.palette.custom.gradient2})`,
   borderRadius: '1rem',
