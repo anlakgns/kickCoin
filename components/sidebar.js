@@ -12,12 +12,17 @@ const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '1rem 1rem',
   paddingTop: '4rem',
   display: 'flex',
-  zIndex: 2000,
   position: 'fixed',
   width: '16.666%',
   left: '0px',
   gap: '3rem',
   flexDirection: 'column',
+  '@media (min-width: 1000px) and (max-width: 1200px)': {
+    width: '20%',
+    height: '100vh',
+    marginTop: '0rem',
+    paddingTop: '2rem',
+  },
   '@media (max-width: 1000px)': {
     backgroundColor: theme.palette.custom.blueDark,
     height: '100vh',

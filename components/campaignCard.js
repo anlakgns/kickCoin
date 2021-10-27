@@ -24,14 +24,14 @@ const MainGrid = styled(Grid)(({ theme }) => ({
     gap: '1rem',
     minWidth: '27.5rem',
   },
-  '@media (min-width: 601px) and (max-width: 1000px)': {
+  '@media (min-width: 601px) and (max-width: 1100px)': {
     height: 'auto',
     display: 'flex',
     gap: '1rem',
     minWidth: '25rem',
     flex: 1,
   },
-  '@media (min-width: 1001px)': {
+  '@media (min-width: 1101px)': {
     maxHeight: '18rem',
     display: 'flex',
     gap: '1rem',
@@ -44,10 +44,11 @@ const ImageDiv = styled('div')(({ theme }) => ({
   backgroundSize: 'cover',
   minHeight: '12rem',
   width: '25rem',
-  '@media (max-width: 1000px)': {
+  '@media (max-width: 1100px)': {
     width: '100%',
     height: '12rem',
   },
+
 }));
 const TextContentGrid = styled(Grid)(({ theme }) => ({
   padding: '1rem',
@@ -149,7 +150,7 @@ const FundedTextMobile = styled(Typography)(({ theme }) => ({
 
 const CampaignCard = ({ campaingInfo, preview }) => {
   const router = useRouter();
-  const matches1000 = useMediaQuery('(max-width: 1000px)');
+  const matches1000 = useMediaQuery('(max-width: 1100px)');
 
   return (
     <MainGrid

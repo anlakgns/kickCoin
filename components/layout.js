@@ -21,11 +21,17 @@ const SubMainGrid = styled(Grid)(({ theme }) => ({
 }));
 const SideMenuGrid = styled(Grid)(({ theme }) => ({
   flex: 2,
+  "@media (min-width: 1000px) and (max-width: 1200px)": {
+    flex:3
+  } 
 }));
 const NavBarGrid = styled(Grid)(({ theme }) => ({}));
 const ContentGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.primary.main,
   flex: 10,
+  "@media (min-width: 1000px) and (max-width: 1200px)": {
+    flex:12
+  },
   '@media (max-width: 1000px)': {
     flexGrow: 1,
   },
