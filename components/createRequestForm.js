@@ -10,7 +10,7 @@ import Campaign from '../ethereum/campaign';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Feedback from './shared/UI/feedback';
-import useFormState from './sharedHooks/formStateHook';
+import useFormState from './shared/hooks/formStateHook';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   backgroundColor: theme.palette.custom.blueDark,
