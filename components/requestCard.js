@@ -40,7 +40,6 @@ const GridItemsContainer = styled(Grid)(({ theme }) => ({
   padding: '2rem',
   flexGrow: 1,
 }));
-
 const GridItem = styled(Grid)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
@@ -312,7 +311,7 @@ const RequestCard = ({ request, id, address, supportersCount, isManager }) => {
           <GridItem>
             <SubHeadline align="left">Recipient</SubHeadline>
             <Description align="right">
-              {request.recipient.substr(0, 7)}...
+              {request.recipient.substr(0, 15)}...
             </Description>
           </GridItem>
 

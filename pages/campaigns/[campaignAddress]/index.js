@@ -14,6 +14,7 @@ const MainGrid = styled(Grid)(({ theme }) => ({
     marginBottom: '5rem',
     padding: '0rem 3rem',
   },
+  marginBottom: '5rem',
 }));
 const SubHeadline = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
@@ -91,14 +92,22 @@ export async function getStaticProps(context) {
 export async function getStaticPaths() {
   // This can be improved by selecting some featured campaigns or highest funded campaigns.
   //  But for now just server side render all the campaign below is a fake.
+  const featuredCampaigns = [
+    '0x08d7eA56B700019930fc8903525e319F5a1Fb383',
+    '0xFf530DACE13D39559Df1D6Ee144f87f9e9cBE564',
+    '0xfa8c11f2bc30378bB2794A0DdDAa9dB66a2BA8ec',
+    '0xD79C17D91EfB7020b522E2b8A91d329d5cD61236',
+    '0x1C2c7d2c97761170cf6e963F9211355b542b31F4',
+    '0x083a15B4Ada7e46F96f937664cF6D09012547889',
+    '0xAF6A52C723991EB3Dd9eA0A9A87C3a19694fc511',
+    '0x2a932A9431Df9d2D7a6d291989335B57fbF0b225',
+  ];
+
+  const paths = featuredCampaigns.map((address) => ({
+    params: { campaignAddress: address },
+  }));
   return {
-    paths: [
-      {
-        params: {
-          campaignAddress: '0x08409F55Cb6aF037733c0FE180919e49D0AF4f62',
-        },
-      },
-    ],
+    paths,
     fallback: true,
   };
 }
