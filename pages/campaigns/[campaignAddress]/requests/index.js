@@ -6,6 +6,9 @@ import Headline from '../../../../components/sharedUI/Headline';
 
 const MainGrid = styled(Grid)(({ theme }) => ({
   padding: '0rem 5rem',
+  '@media (max-width: 1000px)': {
+    padding: '1rem 3rem',
+  },
 }));
 
 const Requests = (props) => {

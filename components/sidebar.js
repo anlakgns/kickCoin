@@ -118,6 +118,7 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
 
 const Divider = styled('div')(({ theme }) => ({
   border: `0.20rem solid ${theme.palette.custom.blueLight} `,
+  backgroundColor: theme.palette.custom.blueLight,
   width: '100%',
   borderRadius: '0.15rem',
   marginBottom: '0.5rem',
@@ -126,6 +127,7 @@ const Divider = styled('div')(({ theme }) => ({
 
 const DividerWarning = styled('div')(({ theme }) => ({
   border: `0.20rem solid ${theme.palette.custom.red} `,
+  backgroundColor: theme.palette.custom.red,
   width: '100%',
   borderRadius: '0.15rem',
   marginBottom: '0.5rem',

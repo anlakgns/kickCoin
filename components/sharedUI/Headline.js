@@ -13,6 +13,7 @@ const HeadlineText = styled(Typography)(({ theme }) => ({
 
 const Divider = styled('div')(({ theme }) => ({
   border: `0.20rem solid ${theme.palette.custom.blueLight} `,
+  backgroundColor: theme.palette.custom.blueLight,
   width: '100%',
   marginTop: '0.4rem',
   marginBottom: '2rem',
